@@ -1,0 +1,52 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+	<header>
+		<nav th:replace="fragments/menu :: menu"></nav>
+	</header>
+	<main>
+	<form class="form" name="form" th:object="${form}" th:action="@{/home/publisher}" method="post">
+		<div class="container pt-3">
+			<div th:replace="home/fragments/hasMessage :: hasMessage"></div>
+			<div class="row">
+				<div class="col jumbotron mb-3 p-3">
+					<h2>Publishers</h2>
+					<p class="lead">Show comics publishers in database.</p>
+					<a href="/home/publisher/add" class="btn btn-primary btn-sm">Add publisher</a>
+					<a th:replace="home/fragments/buttonPageSize :: buttonPageSize">...</a>
+					<div th:replace="home/fragments/buttonPageSize :: buttonPageList">...</div>
+				</div>
+			</div>
+			<div class="row mb-4 p-1 border-top border-bottom">
+				<div class="flex-grow-1" th:text="${pageCount == 1}? '1 publisher': ${pageCount + ' publishers'}"></div>
+				<div><a th:href="@{${pageRedirect}(page=${page.number},view='list',searchText=${searchText},size=${page.size})}"><i class='fas fa-list'></i></a>  <i class='fas fa-th-large'></i></div>
+			</div>
+			<div class="row row-cols-1 row-cols-md-6">
+				<div class="col mb-4" th:each="publisher : ${page}">
+					<div class="card">
+						<a th:href="@{/home/publisher/{id}(id=${publisher.publisherID})}">
+							<img class="card-img-top" th:src="${publisher.publisherImage == null || publisher.publisherImage.imageSmall == null}? '/img/no-image-small.jpg': ${publisher.publisherImage.imageSmall}" alt="..."></a>
+						<div class="card-body p-2">
+							<h6 th:if="${publisher.publisherName != null}" class="card-title" th:text="${#strings.defaultString(publisher.publisherName, '-')}"></h6>
+							<h6 th:if="${publisher.publisherName == null}" class="card-title"><span class="badge badge-danger" th:text="${publisher.publisherID}"></span></h6>
+							<p class="card-text text-secondary">
+								<small th:text="${#strings.defaultString(publisher.publisherStartYear, '-')}"></small><br>
+								<small th:text="${publisher.publisherPublisher == null || publisher.publisherPublisher.publisherName == null}? '-': ${publisher.publisherPublisher.publisherName}"></small><br>
+								<small th:text="${publisher.publisherCountOfIssues == null}? '-': (${publisher.publisherCountOfIssues == 1}? '1 issue': ${publisher.publisherCountOfIssues + ' issues'})"></small>
+							</p>
+						</div>
+						<div class="card-footer p-2">
+							<div class="progress">
+								<div class="progress-bar" th:classappend="${publisher.publisherIssueFilePercent == 100}? 'bg-success'" role="progressbar" th:style="${'width: ' + publisher.publisherIssueFilePercent + '%'}" aria-valuenow="${publisher.publisherIssueFilePercent}" aria-valuemin="0" aria-valuemax="100" th:text="${publisher.publisherIssueFilePercent + '%'}"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div th:replace="home/fragments/pagination :: pagination(entityCount=#{pageCount})">...</div>
+		</div>
+	</form>
+	</main>
+	<div th:replace="fragments/script :: script">...</div>
+</body>
+</html>

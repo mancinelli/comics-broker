@@ -1,0 +1,42 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+	<header>
+		<nav th:replace="fragments/menu :: menu"></nav>
+	</header>
+	<main>
+	<form class="form" name="form" th:object="${form}" th:action="@{/home/administration/user}" method="post">
+		<div class="container pt-3">
+			<div th:replace="home/fragments/hasMessage :: hasMessage"></div>
+			<div class="row">
+				<div class="col jumbotron mb-3 p-3">
+					<h2>Users</h2>
+					<p class="lead">Show users in database.</p>
+				</div>
+			</div>
+			<div class="row mb-4 p-1 border-top border-bottom">
+				<div class="flex-grow-1" th:text="${pageCount == 1}? '1 user': ${pageCount + ' users'}"></div>
+				<div><i class='fas fa-list'></i>  <a th:href="@{${pageRedirect}(page=${page.number},view='grid',searchText=${searchText},size=${page.size})}"><i class='fas fa-th-large'></i></a></div>
+			</div>
+			<table class="table table-bordered table-sm table-hover mb-0">
+				<thead>
+					<tr>
+						<th th:replace="home/fragments/thID :: th(columnName='userID',columnAlias='ID')">...</th>
+						<th th:replace="home/fragments/th :: th(columnName='userName',columnAlias='Name')">...</th>
+						<th th:replace="home/fragments/th :: th(columnName='userEnabled',columnAlias='Enabled')">...</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr class="clickable" th:each="user : ${page}">
+						<th scope="row"><a th:href="@{/home/user/{id}(id=${user.userID})}" th:text="${user.userID}"></a>
+						<td th:text="${user.userName}">
+						<td th:text="${user.userEnabled}">
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</form>
+	</main>
+	<div th:replace="fragments/script :: script">...</div>
+</body>
+</html>

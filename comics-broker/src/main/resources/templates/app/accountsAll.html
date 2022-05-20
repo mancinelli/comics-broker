@@ -1,0 +1,128 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="app/fragments/head :: head"></head>
+<body>
+	<header><nav th:replace="app/fragments/menu :: menu"></nav></header>
+	<div class="container-fluid">
+		<div class="row flex-fill">
+
+			<div th:replace="app/fragments/accountsNavigation :: accounts"></div>
+
+			<div class="col-9">
+				<div class="mt-3">
+					<a type="button" class="btn btn-outline-primary btn-sm me-1" href="#"><i class="bi bi-plus-circle"></i> Add Transaction</a> <!-- TODO -->
+					<button type="button" class="btn btn-outline-primary btn-sm me-1"><i class="bi bi-pencil"></i> Edit</button>
+					<button type="button" class="btn btn-outline-primary btn-sm me-1"><i class="bi bi-file-earmark-arrow-up"></i> File Import</button>
+				</div>
+				
+				<!-- 
+				<div class="card bg-light mt-3">
+					<div class="card-body py-1">
+						<table class="table table-sm table-borderless m-0">
+							<thead>
+								<tr>
+									<th nowrap class="text-secondary" scope="col"><small>Account</small></th>
+									<th></th>
+									<th nowrap class="text-secondary text-end" scope="col"><small>Cleared Balance</small></th>
+									<th></th>
+									<th nowrap class="text-secondary text-end" scope="col"><small>Uncleared Balance</small></th>
+									<th></th>
+									<th nowrap class="text-secondary text-end" scope="col"><small>Working Balance</small></th>
+									<th style="width:100%"></th>
+								</tr>
+							<tbody>
+								<tr>
+									<td nowrap class="fw-bold me-4">All Accounts</td>
+									<td></td>
+									<td nowrap class="fw-bold" align="right" th:text="${bdg.bdgCurrencyPlacement == 1 ? bdg.bdgCurrency.ccySymbol + ' ' : ''} + ${#numbers.formatDecimal(acc.accBalanceCleared,   1, bdg.bdgNumberFormat.bdgnGroupSeparatorText, bdg.bdgNumberFormat.bdgnDecimalDigits, bdg.bdgNumberFormat.bdgnDecimalSeparatorText)} + ${bdg.bdgCurrencyPlacement == 2 ? ' ' + bdg.bdgCurrency.ccySymbol : ''}" th:classappend="${acc.accBalanceCleared   < 0 ? 'text-danger fw-bold' : 'text-success'}"></td>
+									<td>+</td>
+									<td nowrap class="fw-bold" align="right" th:text="${bdg.bdgCurrencyPlacement == 1 ? bdg.bdgCurrency.ccySymbol + ' ' : ''} + ${#numbers.formatDecimal(acc.accBalanceUncleared, 1, bdg.bdgNumberFormat.bdgnGroupSeparatorText, bdg.bdgNumberFormat.bdgnDecimalDigits, bdg.bdgNumberFormat.bdgnDecimalSeparatorText)} + ${bdg.bdgCurrencyPlacement == 2 ? ' ' + bdg.bdgCurrency.ccySymbol : ''}" th:classappend="${acc.accBalanceUncleared < 0 ? 'text-danger fw-bold' : 'text-success'}"></td>
+									<td>=</td>
+									<td nowrap class="fw-bold" align="right" th:text="${bdg.bdgCurrencyPlacement == 1 ? bdg.bdgCurrency.ccySymbol + ' ' : ''} + ${#numbers.formatDecimal(acc.accBalance         , 1, bdg.bdgNumberFormat.bdgnGroupSeparatorText, bdg.bdgNumberFormat.bdgnDecimalDigits, bdg.bdgNumberFormat.bdgnDecimalSeparatorText)} + ${bdg.bdgCurrencyPlacement == 2 ? ' ' + bdg.bdgCurrency.ccySymbol : ''}" th:classappend="${acc.accBalance          < 0 ? 'text-danger fw-bold' : 'text-success'}"></td>
+									<td/>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+ 				-->
+ 				
+				<div class="card mt-3">
+					<div class="card-header py-2">Transactions</div>
+					<div class="card-body py-1">
+						<table class="table table-sm table-borderless m-0">
+							<thead th:unless="${#lists.isEmpty(trxList)}">
+								<tr>
+									<th class="text-secondary text-center" scope="col" width="25"><input class="form-check-input" type="checkbox" value=""></th>
+									<th class="text-secondary text-center" scope="col" width="25"><i class="bi bi-pencil"></i></th>
+									<th class="text-secondary text-center" scope="col" width="25"><i class="bi bi-info-circle"></i></th>
+									<th class="text-secondary text-center" scope="col" width="25"><i class="bi bi-flag"></i></th>
+									<th class="text-secondary col-2" scope="col"><small>Account</small></th>
+									<th class="text-secondary col-1" scope="col"><small>Date</small></th>
+									<th class="text-secondary col-2" scope="col"><small>Payee</small></th>
+									<th class="text-secondary col-3" scope="col"><small>Category</small></th>
+									<th class="text-secondary col-3" scope="col"><small>Memo</small></th>
+									<th class="text-secondary col-1 text-end" scope="col"><small>Outflow</small></th>
+									<th class="text-secondary col-1 text-end" scope="col"><small>Inflow</small></th>
+									<th class="text-secondary text-center" scope="col" width="25"><i class="bi bi-check-circle"></i></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="trx : ${trxList}">
+									
+									<!--
+									<i class="bi bi-flag-fill"></i>
+									<i class="bi bi-bookmark-fill"></i>
+									 -->
+
+									<td width="25"><input class="form-check-input" type="checkbox" value=""></td>
+									<td width="25" class="align-middle"><a href="#"><i class="bi bi-pencil-fill"></i></a></td> <!-- TODO -->
+									<td width="25"></td>
+									<td width="25"></td>
+									<td nowrap><small th:text="${trx.trxAccount.AccName}"></small></td>
+									<td nowrap><small th:text="${#dates.format(trx.trxDate, bdg.bdgDateFormat.bdgdFormat)}"></small></td>
+									<td><small th:if="${trx.trxPayee != null}" th:text="${trx.trxPayee.pyeName}"></small></td>
+									<td><small th:text="${trx.trxCategory.catName}"></small></td>
+									<td><small th:text="${trx.trxMemo}"></small></td>
+									<td nowrap align="right"><small th:text="${trx.trxAmount < 0 ? #numbers.formatDecimal(trx.trxAmount * -1, 1, bdg.bdgNumberFormat.bdgnGroupSeparatorText, bdg.bdgNumberFormat.bdgnDecimalDigits, bdg.bdgNumberFormat.bdgnDecimalSeparatorText) : ''}"></small></td>
+									<td nowrap align="right"><small th:text="${trx.trxAmount > 0 ? #numbers.formatDecimal(trx.trxAmount * +1, 1, bdg.bdgNumberFormat.bdgnGroupSeparatorText, bdg.bdgNumberFormat.bdgnDecimalDigits, bdg.bdgNumberFormat.bdgnDecimalSeparatorText) : ''}"></small></td>
+									<td width="25">
+										<i th:if="${trx.trxCleared == 0}" class="bi bi-check-circle"></i>
+										<i th:if="${trx.trxCleared == 1}" class="bi bi-check-circle-fill"></i>
+										<i th:if="${trx.trxCleared == 2}" class="bi bi-lock-fill"></i>
+									</td>
+								</tr>
+								<tr th:if="${#lists.isEmpty(trxList)}" class="text-secondary">
+									<td>No Transactions.</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+
+
+	<div th:replace="app/fragments/script :: script">...</div>
+
+    <script>
+        $(document).ready(function () {
+            $('#example1').datepicker({
+    		    format: "mm/yyyy",
+    		    startView: 1,
+    		    minViewMode: 1,
+    		    maxViewMode: 2
+            });
+        });
+    </script> 
+
+
+<!-- 	
+	<div th:replace="app/fragments/script_datepicker :: script">...</div>
+ -->
+ 
+
+</body>
+</html>

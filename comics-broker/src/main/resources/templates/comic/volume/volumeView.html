@@ -1,0 +1,200 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+	<header>
+		<nav th:replace="fragments/menu :: menu"></nav>
+	</header>
+	<main>
+		<div class="container pt-3">
+
+			<!-- HEADER -->
+			<div class="row">
+				<div class="col jumbotron mb-3 p-3">
+					<h2><a target="_blank" th:href="@{${volume.volumeSiteDetailURL}}"><i class='fas fa-globe-americas'></i></a> <span th:text="${volume.volumeName}"></span> (<span th:text="${volume.volumeStartYear}"></span>)</h2>
+					<h5>Published by <span th:text="${volume.volumePublisher.publisherName}"></span></h5>
+					<p class="text-secondary"><small th:text="${volume.volumeDeck}"></small></p>
+					<div class="d-flex flex-row">
+						<div class="mr-2"><a th:if="${volume.volumeCompleted}" 	 href="#" class="btn btn-outline-primary btn-sm"><i class='far fa-flag'></i> Mark as ongoing</a></div>
+						<div class="mr-2"><a th:unless="${volume.volumeCompleted}" href="#" class="btn btn-outline-primary btn-sm"><i class='fas fa-flag'></i> Mark as completed</a></div>
+						<div class="mr-2"><a href="#" class="btn btn-outline-primary btn-sm"><i class='fas fa-eye'></i> Mark all as read</a></div>
+						<div class="mr-2"><a href="#" class="btn btn-outline-primary btn-sm"><i class='fas fa-eye-slash'></i> Mark all as unread</a></div>
+						<div class="mr-2"><button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#updateModal">Update files</button></div>
+						<div class="mr-2"><button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#deleteModal">Delete all files</button></div>
+					</div>
+				</div>
+			</div>
+
+			<!-- TOOLBAR -->
+			<div class="row mb-4 p-1 border-top border-bottom d-flex justify-content-between">
+				<div th:text="${pageCount == 1}? '1 issue': ${pageCount + ' issues'}"></div>
+				<div>
+					<i th:if="${view == 'list'}"  class='mx-1 fas fa-list'></i>		<a th:unless="${view == 'list'}" class="mx-1" th:href="@{${pageRedirect}(page=${page.number},view='list',index=${index},bookmark=${bookmark},searchText=${searchText},size=${page.size})}"><i class='fas fa-list'></i></a>
+					<i th:if="${view == 'grid'}"  class='mx-1 fas fa-th'></i>		<a th:unless="${view == 'grid'}" class="mx-1" th:href="@{${pageRedirect}(page=${page.number},view='grid',index=${index},bookmark=${bookmark},searchText=${searchText},size=${page.size})}"><i class='fas fa-th'></i></a>
+					<i th:if="${view == 'thumb'}" class='mx-1 fas fa-th-large'></i>	<a th:unless="${view == 'thumb'}" class="mx-1" th:href="@{${pageRedirect}(page=${page.number},view='thumb',index=${index},bookmark=${bookmark},searchText=${searchText},size=${page.size})}"><i class='fas fa-th-large'></i></a>
+				</div>
+				<div>
+					<i class='fas fa-ruler-vertical'></i>
+					<small>
+						<span th:if="${page.size == 12}"  class="ml-1"><strong>12x</strong></span> 	<a th:unless="${page.size == 12}"  class="ml-1" th:href="@{${pageRedirect}(page=${page.number},view=${view},index=${index},bookmark=${bookmark},searchText=${searchText},size=12)}">12x</a>
+						<span th:if="${page.size == 24}"  class="ml-1"><strong>24x</strong></span> 	<a th:unless="${page.size == 24}"  class="ml-1" th:href="@{${pageRedirect}(page=${page.number},view=${view},index=${index},bookmark=${bookmark},searchText=${searchText},size=24)}">24x</a>
+						<span th:if="${page.size == 48}"  class="ml-1"><strong>48x</strong></span> 	<a th:unless="${page.size == 48}"  class="ml-1" th:href="@{${pageRedirect}(page=${page.number},view=${view},index=${index},bookmark=${bookmark},searchText=${searchText},size=48)}">48x</a>
+						<span th:if="${page.size == 120}" class="ml-1"><strong>120x</strong></span> <a th:unless="${page.size == 120}" class="ml-1" th:href="@{${pageRedirect}(page=${page.number},view=${view},index=${index},bookmark=${bookmark},searchText=${searchText},size=120)}">120x</a>
+						<span th:if="${page.size == 240}" class="ml-1"><strong>240x</strong></span> <a th:unless="${page.size == 240}" class="ml-1" th:href="@{${pageRedirect}(page=${page.number},view=${view},index=${index},bookmark=${bookmark},searchText=${searchText},size=240)}">240x</a>
+					</small>
+				</div>
+			</div>
+			
+			<!-- LIST -->	
+			<table th:if="${view == 'list'}" class="table table-bordered table-sm table-hover mb-0">
+				<thead class="thead-light">
+					<tr>
+						<th class="text-center"><i class="far fa-bookmark"></i></th>
+						<th th:replace="home/fragments/thID :: th(columnName='issueID',columnAlias='ID')">...</th>
+						<th></th>
+						<th th:replace="home/fragments/th :: th(columnName='issueName',columnAlias='#')">...</th>
+						<th th:replace="home/fragments/th :: th(columnName='issueName',columnAlias='Name')">...</th>
+						<th th:replace="home/fragments/th :: th(columnName='issueCoverDate',columnAlias='Dt Cover')">...</th>
+						<th class="text-center"><i class="far fa-file"></i></th>
+						<th th:replace="home/fragments/th :: th(columnName='issueFileExtension',columnAlias='Ext')">...</th>
+						<th th:replace="home/fragments/th :: th(columnName='issueFileSize',columnAlias='Size')">...</th>
+						<th class="text-center"><i class="fas fa-cloud"></i></th>
+						<th>Arcs</th>
+						<th th:replace="home/fragments/th :: th(columnName='issueDateAdded',columnAlias='Dt Added')">...</th>
+						<th th:replace="home/fragments/th :: th(columnName='issueDateLastUpdated',columnAlias='Dt Updated')">...</th>
+						<th th:replace="home/fragments/th :: th(columnName='issueUpdatedOn',columnAlias='Updated On')">...</th>
+						<th th:replace="home/fragments/th :: th(columnName='issueUpdatedDays',columnAlias='Days')">...</th>
+						<th class="text-center"><i class="fas fa-link"></i></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr class="clickable" th:each="issue : ${page}">
+						<td/>
+						<td class="text-right" scope="row"><a th:href="@{/home/issue/{id}(id=${issue.issueID})}" th:text="${issue.issueID}"></a></td>
+						<td class="text-nowrap">
+							<a th:href="@{/home/issue/{id}(id=${issue.issueID})}">
+								<img th:src="${issue.issueImage == null || issue.issueImage.imageTiny == null}? '/img/no-image-tiny.jpg': ${issue.issueImage.imageTiny}" th:style="${issue.issueFile == null}? 'filter: grayscale(100%) opacity(25%);' : ( ${issue.issueStatus == 1}? 'filter: opacity(75%);' )">
+							</a>
+						</td>
+						<td class="text-right" th:text="${issue.issueNumber}"></td>
+						<td th:text="${issue.issueName}"></td>
+						<td class="text-nowrap"><small th:text="${issue.issueCoverDate}"></small></td>
+						<td th:if="${issue.issueFileExtension == null}"></td>
+						<td class="text-center" th:if="${#strings.toUpperCase(issue.issueFileExtension) == 'PDF'}"><i class="far fa-file-pdf"></i></td>
+						<td class="text-center" th:if="${#strings.toUpperCase(issue.issueFileExtension) == 'CBR' or #strings.toUpperCase(issue.issueFileExtension) == 'CBZ'}"><i class="far fa-file-alt"></i></td>
+						<td class="text-center" th:if="${#strings.toUpperCase(issue.issueFileExtension) == 'RAR' or #strings.toUpperCase(issue.issueFileExtension) == 'ZIP'}"><i class="far fa-file-archive"></i></td>
+						<td class="text-center"><small th:text="${#strings.toUpperCase(issue.issueFileExtension)}"></small></td>
+						<td class="text-right"><small th:if="${issue.issueFileSize != null}" th:text="${#numbers.formatInteger(issue.issueFileSize/1024/1024,0,'POINT')} + 'M'"></small></td>
+						<td class="text-right" th:if="${issue.issueFile == null}"><i class="fas fa-cloud-upload-alt"></i>
+						<td class="text-right" th:if="${issue.issueFile != null}"><a th:href="${issue.issueFile}"><i class="fas fa-cloud-download-alt"></i></a>
+						<td class="text-right"><small th:text="${#lists.size(issue.issueArcs)}"></small></td>
+						<td class="text-nowrap"><small th:text="${#dates.format(issue.issueDateAdded, 'yyyy-MM-dd')}"></small></td>
+						<td class="text-nowrap"><small th:text="${#dates.format(issue.issueDateLastUpdated, 'yyyy-MM-dd hh:mm')}"></small></td>
+						<td class="text-nowrap"><small th:text="${#dates.format(issue.issueUpdatedOn, 'yyyy-MM-dd hh:mm')}"></small></td>
+						<td class="text-right"><small th:text="${#numbers.formatInteger(issue.issueUpdatedDays, 1,'POINT')}"></small></td>
+						<td class="text-center"><a target="_blank" th:href="@{${issue.issueSiteDetailURL}}"><i class='fas fa-globe-americas'></i></a></td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<!-- GRID/THUMB -->	
+			<div th:unless="${view == 'list'}" class="row row-cols-1" th:classappend="${view == 'grid'}? row-cols-md-6: row-cols-md-3">
+				<div class="col mb-4 p-2" th:each="issue : ${page}">
+					<div class="card">
+						<a th:href="@{/home/issue/{id}(id=${issue.issueID})}">
+							<img th:src="${issue.issueImage == null || issue.issueImage.imageSmall == null}? '/img/no-image-small.jpg': ${issue.issueImage.imageSmall}" class="card-img-top" alt="..." 
+								th:style="${issue.issueFile == null}? 'filter: grayscale(100%) opacity(25%);' : ( ${issue.issueStatus == 1}? 'filter: opacity(75%);' )">
+						</a>
+						<div class="card-body p-2">
+							<h6 class="card-title text-center" th:text="${'#' + issue.issueNumber}"></h6>
+							<p class="card-text text-secondary"><small th:text="${issue.issueName}"></small></p>
+						</div>
+						<div class="card-footer p-2">
+							<small class="text-muted" th:text="${issue.issueCoverDate == null || issue.issueCoverDate == ''}? '-': ${issue.issueCoverDate}"></small>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<!-- PAGINATION -->
+			<div class="card-footer">
+				<ul class="pagination pagination-sm justify-content-center flex-wrap m-0">
+				    <li class="page-item mb-1 d-flex align-items-stretch" th:classappend="${page.number == 0} ? 'disabled'">
+				    	<a class="page-link d-flex align-items-center" th:href="@{${pageRedirect}(page=0,view=${view},index=${index},bookmark=${bookmark},searchText=${searchText},size=${page.size})}"><i class='fas fa-angle-double-left'></i></a>
+				    </li>
+				    <li class="page-item mb-1 d-flex align-items-stretch" th:classappend="${page.number == 0} ? 'disabled'">
+				    	<a class="page-link d-flex align-items-center" th:href="@{${pageRedirect}(page=${page.number-1},view=${view},index=${index},bookmark=${bookmark},searchText=${searchText},size=${page.size})}"><i class='fas fa-angle-left'></i></a>
+				    </li>
+				    <li class="page-item mb-1 d-flex align-items-stretch" th:classappend="${page.number == i} ? 'active'" th:each="i: ${#numbers.sequence(0, page.totalPages-1)}">
+				    	<a class="page-link d-flex align-items-center" th:text="${i+1}" th:href="@{${pageRedirect}(page=${i},view=${view},index=${index},bookmark=${bookmark},searchText=${searchText},size=${page.size})}"></a>
+				    </li>
+				    <li class="page-item mb-1 d-flex align-items-stretchr" th:classappend="${page.number == page.totalPages-1} ? 'disabled'">
+				    	<a class="page-link d-flex align-items-center" th:href="@{${pageRedirect}(page=${page.number+1},view=${view},index=${index},bookmark=${bookmark},searchText=${searchText},size=${page.size})}"><i class='fas fa-angle-right'></i></a>
+				    </li>
+				    <li class="page-item mb-1 d-flex align-items-stretch" th:classappend="${page.number == page.totalPages-1} ? 'disabled'">
+				    	<a class="page-link d-flex align-items-center" th:href="@{${pageRedirect}(page=${page.totalPages-1},view=${view},index=${index},bookmark=${bookmark},searchText=${searchText},size=${page.size})}"><i class='fas fa-angle-double-right'></i></a>
+				    </li>
+			  	</ul>
+			</div>
+
+		</div>
+		<footer></footer>
+	</main>
+
+	<form method="POST" th:action="@{'/home/volume/' + ${volume.volumeID} +'/updateFiles'}" enctype="multipart/form-data">
+
+	<!-- Modal upload all files -->
+	<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="updateModalLabel">Update files</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<p><strong th:text="${volume.volumeName}"></strong></p>
+					<p th:text="${volume.volumeStartYear}"></p>
+					<p th:text="${volume.volumePublisher.publisherName}"></p>
+					<p></p>
+					<div class="input-group mb-3">
+						<div class="custom-file">
+							<input type="file" multiple class="custom-file-input" id="files" name="files" aria-describedby="inputGroupFileAddon01">
+							<label class="custom-file-label" for="files">Choose files</label>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+					<button type="submit" name="update" class="btn btn-primary">Upload all files</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal confirm delete all files -->
+	<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header" id="deleteModalLabel">
+					<h5 class="modal-title">Delete all files</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<p>Are you sure you want to delete all files on the volume?</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">No, cancel delete</button>
+					<button type="submit" name="clear" class="btn btn-danger">Yes, delete all files</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	</form>
+	
+	<div th:replace="fragments/script :: script">...</div>
+</body>
+</html>

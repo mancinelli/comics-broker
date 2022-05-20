@@ -1,0 +1,54 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+	<header>
+		<nav th:replace="fragments/menu :: menu"></nav>
+	</header>
+	<main>
+	<form class="form" name="form" th:object="${form}" th:action="@{/home/arc}" method="post">
+		<div class="container pt-3">
+			<div th:replace="home/fragments/hasMessage :: hasMessage"></div>
+			<div class="row">
+				<div class="col jumbotron mb-3 p-3">
+					<h2>Arcs</h2>
+					<p class="lead">Show arcs in database.</p>
+					<a href="/home/arc/add" class="btn btn-primary btn-sm">Add arc</a>
+					<a th:replace="home/fragments/buttonPageSize :: buttonPageSize">...</a>
+					<div th:replace="home/fragments/buttonPageSize :: buttonPageList">...</div>
+				</div>
+			</div>
+			<div class="row mb-4 p-1 border-top border-bottom">
+				<div class="flex-grow-1" th:text="${pageCount == 1}? '1 arc': ${pageCount + ' arcs'}"></div>
+				<div><a th:href="@{${pageRedirect}(page=${page.number},view='list',index=${index},searchText=${searchText},size=${page.size})}"><i class='fas fa-list'></i></a>  <i class='fas fa-th-large'></i></div>
+			</div>
+			<div th:replace="home/fragments/tableIndex :: tableIndex">...</div>
+
+			<div class="row row-cols-1 row-cols-md-6">
+				<div class="col mb-4" th:each="arc : ${page}">
+					<div class="card">
+						<a th:href="@{/home/arc/{id}(id=${arc.arcID})}">
+							<img class="card-img-top" th:src="${arc.arcIssues == null || arc.arcIssues[0].issueImage == null || arc.arcIssues[0].issueImage.imageSmall == null}? '/img/no-image-small.jpg': ${arc.arcIssues[0].issueImage.imageSmall}" alt="..."></a>
+						<div class="card-body p-2">
+							<h6 th:if="${arc.arcName != null}" class="card-title" th:text="${#strings.defaultString(arc.arcName, '-')}"></h6>
+							<h6 th:if="${arc.arcName == null}" class="card-title"><span class="badge badge-danger" th:text="${arc.arcID}"></span></h6>
+							<p class="card-text text-secondary">
+								<small th:text="${arc.arcPublisher == null || arc.arcPublisher.publisherName == null}? '-': ${arc.arcPublisher.publisherName}"></small><br>
+								<small th:text="${arc.arcIssues == null || #lists.size(arc.arcIssues) == 0}? '-': ( ${#lists.size(arc.arcIssues) == 1}? '1 issue': ${#lists.size(arc.arcIssues)} + ' issues' )"></small><br>
+								<small th:text="${arc.arcCountOfIssueAppearancess == null}? '-': (${arc.arcCountOfIssueAppearancess == 1}? '1 issue': ${arc.arcCountOfIssueAppearancess + ' issues'})"></small>
+							</p>
+						</div>
+						<div class="card-footer p-2">
+							<div class="progress">
+								<div class="progress-bar" th:classappend="${arc.arcIssueFilePercent == 100}? 'bg-success'" role="progressbar" th:style="${'width: ' + arc.arcIssueFilePercent + '%'}" aria-valuenow="${arc.arcIssueFilePercent}" aria-valuemin="0" aria-valuemax="100" th:text="${arc.arcIssueFilePercent + '%'}"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div th:replace="home/fragments/pagination :: pagination(entityCount=#{pageCount})">...</div>
+		</div>
+	</form>
+	</main>
+	<div th:replace="fragments/script :: script">...</div>
+</body>
+</html>

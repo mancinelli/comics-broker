@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
+
+<nav th:fragment="menu" class="col-12 flex navbar navbar-expand-lg navbar-dark bg-dark">
+	<a class="navbar-brand" href="/budgets">Budgets</a>
+	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item active"><a class="nav-link" href="/budgets">Budget <span class="sr-only">(current)</span></a></li>
+			<li class="nav-item active"><a class="nav-link" href="/accounts">Account <span class="sr-only">(current)</span></a></li>
+			<li class="nav-item active"><a class="nav-link" href="/reports">Report <span class="sr-only">(current)</span></a></li>
+			<li class="nav-item active"><a class="nav-link" href="/import">Import<span class="sr-only">(current)</span></a></li>
+			<li class="nav-item active"><a class="nav-link" href="/administration/users">User <span class="sr-only">(current)</span></a></li>
+		</ul>
+		<form class="form-inline my-2 my-lg-0" sec:authorize="isAuthenticated()" action="#" th:action="@{/logout}" method="post">
+			<i class="fas fa-user mr-sm-1 text-white"></i>
+			<label class="mr-sm-2 text-white" th:text="${#authentication.name}"></label>
+			<button class="btn btn-light my-2 my-sm-0" type="submit"><i class="fas fa-sign-out-alt"></i></button>
+		</form>
+	</div>
+</nav>
+
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+	<!-- PAGINATION -->	
+	<div th:fragment="pagination(entityCount)">
+		<div class="card-footer">
+			<ul class="pagination pagination-sm justify-content-center flex-wrap m-0">
+	
+				<!-- First page -->		
+			    <li class="page-item mb-1 d-flex align-items-stretch" th:classappend="${page.number == 0} ? 'disabled'">
+			    	<a class="page-link d-flex align-items-center" th:href="@{${pageRedirect}(page=0,view=${view},index=${index},publisher=${publisher},searchText=${searchText},size=${page.size})}"><span>&#8606;</span></a></li>
+	
+			    <!-- Previous page -->
+			    <li class="page-item mb-1 d-flex align-items-stretch" th:classappend="${page.number == 0} ? 'disabled'">
+			    	<a class="page-link d-flex align-items-center" th:href="@{${pageRedirect}(page=${page.number-1},view=${view},index=${index},publisher=${publisher},searchText=${searchText},size=${page.size})}">&#8592;</a></li>
+	
+				<!-- Page numbers -->
+			    <li class="page-item mb-1 d-flex align-items-stretch" th:classappend="${page.number == i} ? 'active'" th:each="i: ${#numbers.sequence(0, page.totalPages-1)}">
+			    	<a class="page-link d-flex align-items-center" th:text="${i+1}" th:href="@{${pageRedirect}(page=${i},view=${view},index=${index},publisher=${publisher},searchText=${searchText},size=${page.size})}"></a></li>
+	
+			    <!-- Next page -->
+			    <li class="page-item mb-1 d-flex align-items-stretchr" th:classappend="${page.number == page.totalPages-1} ? 'disabled'">
+			    	<a class="page-link d-flex align-items-center" th:href="@{${pageRedirect}(page=${page.number+1},view=${view},index=${index},publisher=${publisher},searchText=${searchText},size=${page.size})}">&#8594;</a></li>
+	
+			    <!-- Last page  -->
+			    <li class="page-item mb-1 d-flex align-items-stretch" th:classappend="${page.number == page.totalPages-1} ? 'disabled'">
+			    	<a class="page-link d-flex align-items-center" th:href="@{${pageRedirect}(page=${page.totalPages-1},view=${view},index=${index},publisher=${publisher},searchText=${searchText},size=${page.size})}">&#8608;</a></li>
+	
+		  	</ul>
+		</div>
+	</div>
+
+</html>

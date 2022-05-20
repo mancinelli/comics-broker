@@ -1,0 +1,67 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+	<main>
+
+		<div class="container-fluid h-100 d-flex flex-column">
+			<div class="row flex-shrink-0">
+				<nav th:replace="fragments/menu :: menu"></nav>
+			</div>
+			<div class="row flex-fill" style="min-height: 0">
+				<div class="col-3" style="overflow-y: auto;">
+					<h6 class="m-2 d-flex justify-content-between">
+						<span>BUDGET</span>
+						<span>?.??</span>
+					</h6>
+					<ul class="list-group">
+						<li class="p-1 list-group-item d-flex justify-content-between" th:each="account : ${accountList}">
+							<div><span><a th:href="@{/{budgetUUID}/account/{accountUUID} (budgetUUID=${budget.budgetUUID},accountUUID=${account.accountUUID},)}"><i class="far fa-arrow-alt-circle-right text-secondary"></i></a></span> <span th:text="${account.accountName}"></span></div>
+							<div th:text="${#numbers.formatDecimal(account.accountBalance, 0, 'POINT', 2, 'COMMA')}"></div>
+						</li>
+					</ul>
+				</div>
+				<div class="col-6 mh-100" style="overflow-y: scroll;">
+					Budgets
+					<p>Sriracha biodiesel taxidermy organic post-ironic,
+						Intelligentsia salvia mustache 90's code editing brunch. Butcher
+						polaroid VHS art party, hashtag Brooklyn deep v PBR narwhal
+						sustainable mixtape swag wolf squid tote bag. Tote bag cronut
+						semiotics, raw denim deep v taxidermy messenger bag. Tofu YOLO
+						Etsy, direct trade ethical Odd Future jean shorts paleo. Forage
+						Shoreditch tousled aesthetic irony, street art organic Bushwick
+						artisan cliche semiotics ugh synth chillwave meditation. Shabby
+						chic lomo plaid vinyl chambray Vice. Vice sustainable cardigan,
+						Williamsburg master cleanse hella DIY 90's blog.</p>
+
+					<p>Ethical Kickstarter PBR asymmetrical lo-fi. Dreamcatcher
+						street art Carles, stumptown gluten-free Kickstarter artisan Wes
+						Anderson wolf pug. Godard sustainable you probably haven't heard
+						of them, vegan farm-to-table Williamsburg slow-carb readymade
+						disrupt deep v. Meggings seitan Wes Anderson semiotics, cliche
+						American Apparel whatever. Helvetica cray plaid, vegan brunch
+						Banksy leggings +1 direct trade. Wayfarers codeply PBR selfies.
+						Banh mi McSweeney's Shoreditch selfies, forage fingerstache food
+						truck occupy YOLO Pitchfork fixie iPhone fanny pack art party
+						Portland.</p>
+
+				</div>
+				<div class="col-3 border" style="overflow-y: auto;">
+					Properties
+					<p>Ethical Kickstarter PBR asymmetrical lo-fi. Dreamcatcher
+						street art Carles, stumptown gluten-free Kickstarter artisan Wes
+						Anderson wolf pug. Godard sustainable you probably haven't heard
+						of them, vegan farm-to-table Williamsburg slow-carb readymade
+						disrupt deep v. Meggings seitan Wes Anderson semiotics, cliche
+						American Apparel whatever. Helvetica cray plaid, vegan brunch
+						Banksy leggings +1 direct trade. Wayfarers codeply PBR selfies.
+						Banh mi McSweeney's Shoreditch selfies, forage fingerstache food
+						truck occupy YOLO Pitchfork fixie iPhone fanny pack art party
+						Portland.</p>
+				</div>
+			</div>
+		</div>
+	
+	</main>
+	<div th:replace="fragments/script :: script">...</div>
+</body>
+</html>

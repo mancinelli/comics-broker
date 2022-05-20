@@ -1,0 +1,53 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+	<header>
+		<nav th:replace="fragments/menu :: menu"></nav>
+	</header>
+	<main>
+	<form class="form" name="form" th:object="${form}" th:action="@{/home/publisher}" method="post">
+		<div class="container pt-3">
+			<div th:replace="home/fragments/hasMessage :: hasMessage"></div>
+			<div class="row">
+				<div class="col jumbotron mb-3 p-3">
+					<h2>Publishers</h2>
+					<p class="lead">Show comics publishers in database.</p>
+					<a th:replace="home/fragments/buttonPageSize :: buttonPageSize">...</a>
+					<div th:replace="home/fragments/buttonPageSize :: buttonPageList">...</div>
+				</div>
+			</div>
+			<div class="row mb-4 p-1 border-top border-bottom">
+				<div class="flex-grow-1" th:text="${pageCount == 1}? '1 publisher': ${pageCount + ' publishers'}"></div>
+				<div><i class='fas fa-list'></i>  <a th:href="@{${pageRedirect}(page=${page.number},view='grid',searchText=${searchText},size=${page.size})}"><i class='fas fa-th-large'></i></a></div>
+			</div>
+			<table class="table table-bordered table-sm table-hover mb-0">
+				<thead>
+					<tr>
+						<th th:replace="home/fragments/thID :: th(columnName='publisherID',columnAlias='ID')">...</th>
+						<th/>
+						<th th:replace="home/fragments/th :: th(columnName='publisherName',columnAlias='Name')">...</th>
+						<th>Volumes</th>
+						<th>Arcs</th>
+						<th th:replace="home/fragments/th :: th(columnName='publisherDateAdded',columnAlias='Date Added')">...</th>
+						<th th:replace="home/fragments/th :: th(columnName='publisherDateLastUpdated',columnAlias='Date Last Updated')">...</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr class="clickable" th:each="publisher : ${page}">
+						<th scope="row"><a th:href="@{/home/publisher/{id}(id=${publisher.publisherID})}" th:text="${publisher.publisherID}"></a>
+						<td><!-- <a target="_blank" th:href="@{${publisher.publisherSiteDetailURL}}"><i class='fas fa-globe-americas'></i></a> -->
+						<td th:text="${publisher.publisherName}">
+						<td> <!--  th:text="${#lists.size(publisher.publisherVolumes)}"> --> 
+						<td> <!--  th:text="${#lists.size(publisher.publisherArcs)}"> -->
+						<td><!-- <small th:text="${#dates.format(publisher.publisherDateAdded, 'yyyy-MM-dd HH:mm')}"></small> -->
+						<td><!-- <small th:text="${#dates.format(publisher.publisherDateLastUpdated, 'yyyy-MM-dd HH:mm')}"></small> -->
+					</tr>
+				</tbody>
+			</table>
+			<div th:replace="home/fragments/pagination :: pagination(entityCount=#{pageCount})">...</div>
+		</div>
+	</form>
+	</main>
+	<div th:replace="fragments/script :: script">...</div>
+</body>
+</html>

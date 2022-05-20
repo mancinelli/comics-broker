@@ -1,0 +1,113 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+	<header>
+		<nav th:replace="fragments/menu :: menu"></nav>
+	</header>
+	<main>
+		<div class="container pt-3">
+
+			<div class="row">
+				<div class="col jumbotron p-3 mb-2">
+					<h2>#<span th:text="${issue.issueNumber}"></span> <span th:text="${issue.issueName}"></span></h2>
+					<h5><span th:text="${issue.issueVolume.volumeName}"></span> (<span th:text="${issue.issueVolume.volumeStartYear}"></span>)</h5>
+					<h6>Published by <span th:text="${issue.issueVolume.volumePublisher.publisherName}"></span></h6>
+					<p class="text-secondary"><small th:text="${issue.issueDeck}"></small></p>
+					<a th:href="${issue.issueFile}" class="btn btn-primary btn-sm">Download</a>
+					<a href="#" class="btn btn-primary btn-sm">Mark as read</a>
+					<a href="#" class="btn btn-primary btn-sm">Mark as unread</a>
+					<button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#updateModal">Update file</button>
+					<button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#deleteModal">Delete file</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-12 col-md-6 col-lg-8 p-1 mt-2">
+					<a><img th:src="${issue.issueImage == null || issue.issueImage.imageMedium == null}? '/img/no-image-medium.jpg': ${issue.issueImage.imageMedium}" class="card-img-top" alt="..." ></a>
+					<p><strong>Description:</strong></p>
+					<p th:remove="tag" th:utext="${issue.issueDescription}"></p>
+				</div>
+				<div class="col-12 col-md-6 col-lg-4 p-1 mt-2">
+					<ul class="list-group">
+						<li class="list-group-item"><strong>Publisher:</strong> <span th:text="${issue.issueVolume.volumePublisher.publisherName}"></span></li>
+						<li class="list-group-item"><strong>Volume:</strong> <span th:text="${issue.issueVolume.volumeName}"></span></li>
+						<li class="list-group-item"><strong>Volume Year:</strong> <a th:href="@{/home/volume/{id}(id=${issue.issueVolume.volumeID})}"><span th:text="${issue.issueVolume.volumeStartYear}"></span></a></li>
+						<li class="list-group-item"><strong>Issue Name:</strong> <span th:text="${issue.issueName}"></span></li>
+						<li class="list-group-item"><strong>Issue Number:</strong> #<span th:text="${issue.issueNumber}"></span></li>
+						<li class="list-group-item"><strong>Cover Date:</strong> <span th:text="${issue.issueCoverDate}"></span></li>
+						<li class="list-group-item"><strong>In Store Date:</strong> <span th:text="${issue.issueStoreDate}"></span></li>
+						<li class="list-group-item"><strong>Arcs:</strong>
+							<div th:each="arc : ${issue.issueArcs}" th:text="${arc.arcName}"></div>
+						</li>
+						<li class="list-group-item"><strong>Date Added:</strong> <span th:text="${issue.issueDateAdded}"></span></li>
+						<li class="list-group-item"><strong>Date Last Updated:</strong> <span th:text="${issue.issueDateLastUpdated}"></span></li>
+						<li class="list-group-item"><strong>File Format:</strong> <span th:text="${issue.issueFileExtension}"></span></li>
+						<li class="list-group-item"><strong>File Size:</strong> <span th:text="${issueHumanReadableByteCount}"></span></li>
+						<li class="list-group-item"><strong>Original File Name:</strong> <span th:text="${issue.issueFileOriginal}"></span></li>
+						<li class="list-group-item"><strong>Site Detail:</strong> <a target="_blank" th:href="@{${issue.issueSiteDetailURL}}">ComicVine</a></li>
+						<!-- <li class="list-group-item"><div th:remove="tag" th:utext="${issue.issueDescription}"></div></li> -->
+					</ul>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<form method="POST" th:action="@{'/home/issue/' + ${issue.issueID} +'/updateFiles'}" enctype="multipart/form-data">
+
+	<!-- Modal upload all files -->
+	<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="updateModalLabel">Update files</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<p><strong>#<span th:text="${issue.issueNumber}"></span></strong></p>
+					<p><strong th:text="${issue.issueName}"></strong></p>
+					<p th:text="${issue.issueVolume.volumeName}"></p>
+					<p th:text="${issue.issueVolume.volumeStartYear}"></p>
+					<p th:text="${issue.issueVolume.volumePublisher.publisherName}"></p>
+					<p></p>
+					<div class="input-group mb-3">
+						<div class="custom-file">
+							<input type="file" multiple class="custom-file-input" id="files" name="files" aria-describedby="inputGroupFileAddon01">
+							<label class="custom-file-label" for="files">Choose files</label>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+					<button type="submit" name="update" class="btn btn-primary">Upload all files</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal confirm delete all files -->
+	<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header" id="deleteModalLabel">
+					<h5 class="modal-title">Delete all files</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<p>Are you sure you want to delete all files on the volume?</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">No, cancel delete</button>
+					<button type="submit" name="clear" class="btn btn-danger">Yes, delete all files</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	</form>
+	
+	<div th:replace="fragments/script :: script">...</div>
+</body>
+</html>

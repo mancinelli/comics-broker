@@ -1,0 +1,30 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="home/_fragments/head :: head"></head>
+
+<body>
+	<header>
+		<nav th:replace="home/_fragments/menu :: menu"></nav>
+	</header>
+	<main>
+		<div class="container">
+			<div class="row pt-3">
+				<div class="col">
+					<div class="card bg-light">
+ 						<div class="card-header"><strong>Authorities</strong></div>
+						<div class="card-body">
+							<p th:each="authority : ${#authentication.getAuthorities()}"
+								th:if="${authority.getAuthority().startsWith('ROLE_')}"
+								th:text="${authority.getAuthority().replaceFirst('ROLE_', '')}">
+							</p>
+						</div> 
+					</div>
+				</div>				
+			</div>
+		</div>
+		<footer></footer>
+	</main>
+	<div th:replace="home/_fragments/script :: script">...</div>
+
+</body>
+</html>

@@ -1,0 +1,205 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+	<header>
+		<nav th:replace="fragments/menu :: menu"></nav>
+	</header>
+	<main>
+	<form class="form" name="form" th:object="${form}" th:action="@{/home/form}" method="post">
+		<div class="container pt-3">
+			<div th:replace="home/fragments/hasMessage :: hasMessage"></div>
+			
+			<!-- HEADER -->
+			<div class="row">
+				<div class="col jumbotron mb-3 p-3">
+					<h2><a target="_blank" th:href="@{https://comicvine.gamespot.com/volumes/}"><i class='fas fa-globe-americas'></i></a> Volumes</h2>
+					<p class="lead">Show comics volumes in database.</p>
+					<div class="d-flex flex-row">
+						<div><a href="/home/volume/add" class="btn btn-primary btn-sm mr-2">Add volume</a></div>
+						<div class="dropdown mr-2">
+							<button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" id="publisherButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" th:text="${publisherName}"></button>
+							<div class="dropdown-menu" aria-labelledby="publisherButton">
+								<a class="dropdown-item" th:href="@{${pageRedirect}(page=${page.number},view=${view},index=${index},publisher='*',star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${size})}">ALL Publishers</a>
+								<div class="dropdown-divider"></div>
+								<a th:each="pub : ${publisherList}" class="dropdown-item" th:href="@{${pageRedirect}(page=${page.number},view=${view},index=${index},publisher=${pub.publisherID},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${size})}" th:text="${pub.publisherName}"></a>
+							</div>
+						</div>
+						<div class="dropdown mr-2">
+							<button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" id="starButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i th:class="${star == '1'}? 'fas fa-star': 'far fa-star'"></i> <span th:text="${starName}"></span></button>
+							<div class="dropdown-menu" aria-labelledby="starButton">
+								<a class="dropdown-item" th:href="@{${pageRedirect}(page=${page.number},view=${view},index=${index},publisher=${publisher},star='*',flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${size})}"><i class="far fa-star"></i> <span>ALL Volumes</span></a>
+								<div class="dropdown-divider"></div>
+								<a class="dropdown-item" th:href="@{${pageRedirect}(page=${page.number},view=${view},index=${index},publisher=${publisher},star='2',flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${size})}"><i class="far fa-star"></i> Unstarry volumes</a>
+								<a class="dropdown-item" th:href="@{${pageRedirect}(page=${page.number},view=${view},index=${index},publisher=${publisher},star='1',flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${size})}"><i class="fas fa-star"></i> Starry volumes</a>
+							</div>
+						</div>
+						<div class="dropdown mr-2">
+							<button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" id="flagButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i th:class="${flag == '1'}? 'fas fa-flag': 'far fa-flag'"></i> <span th:text="${flagName}"></span></button>
+							<div class="dropdown-menu" aria-labelledby="flagButton">
+								<a class="dropdown-item" th:href="@{${pageRedirect}(page=${page.number},view=${view},index=${index},publisher=${publisher},star=${star},flag='*',bookmark=${bookmark},searchText=${searchText},size=${size})}"><i class="far fa-flag"></i> <span>ALL Flags</span></a>
+								<div class="dropdown-divider"></div>
+								<a class="dropdown-item" th:href="@{${pageRedirect}(page=${page.number},view=${view},index=${index},publisher=${publisher},star=${star},flag='2',bookmark=${bookmark},searchText=${searchText},size=${size})}"><i class="far fa-flag"></i> Ongoing volumes</a>
+								<a class="dropdown-item" th:href="@{${pageRedirect}(page=${page.number},view=${view},index=${index},publisher=${publisher},star=${star},flag='1',bookmark=${bookmark},searchText=${searchText},size=${size})}"><i class="fas fa-flag"></i> Completed volumes</a>
+							</div>
+						</div>
+						<div class="dropdown mr-2">
+							<button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" id="flagButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i th:class="${bookmark == '1'}? 'fas fa-bookmark': 'far fa-bookmark'"></i> <span th:text="${bookmarkName}"></span></button>
+							<div class="dropdown-menu" aria-labelledby="flagButton">
+								<a class="dropdown-item" th:href="@{${pageRedirect}(page=${page.number},view=${view},index=${index},publisher=${publisher},star=${star},flag='0',bookmark=${bookmark},searchText=${searchText},size=${size})}"><i class="far fa-bookmark"></i> <span>ALL Bookmarks</span></a>
+								<div class="dropdown-divider"></div>
+								<a class="dropdown-item" th:href="@{${pageRedirect}(page=${page.number},view=${view},index=${index},publisher=${publisher},star=${star},flag='1',bookmark=${bookmark},searchText=${searchText},size=${size})}"><i class="fas fa-bookmark"></i> Wish</a>
+								<a class="dropdown-item" th:href="@{${pageRedirect}(page=${page.number},view=${view},index=${index},publisher=${publisher},star=${star},flag='1',bookmark=${bookmark},searchText=${searchText},size=${size})}"><i class="fas fa-bookmark text-danger"></i> Reading</a>
+								<a class="dropdown-item" th:href="@{${pageRedirect}(page=${page.number},view=${view},index=${index},publisher=${publisher},star=${star},flag='1',bookmark=${bookmark},searchText=${searchText},size=${size})}"><i class="fas fa-bookmark text-success"></i> Read</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- TOOLBAR -->
+			<div class="row mb-4 p-1 border-top border-bottom d-flex justify-content-between">
+				<div th:text="${pageCount == 1}? '1 volume': ${pageCount + ' volumes'}"></div>
+				<div>
+					<i th:if="${view == 'list'}"  class='mx-1 fas fa-list'></i>		<a th:unless="${view == 'list'}" class="mx-1" th:href="@{${pageRedirect}(page=${page.number},view='list',index=${index},publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}"><i class='fas fa-list'></i></a>
+					<i th:if="${view == 'grid'}"  class='mx-1 fas fa-th'></i>		<a th:unless="${view == 'grid'}" class="mx-1" th:href="@{${pageRedirect}(page=${page.number},view='grid',index=${index},publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}"><i class='fas fa-th'></i></a>
+					<i th:if="${view == 'thumb'}" class='mx-1 fas fa-th-large'></i>	<a th:unless="${view == 'thumb'}" class="mx-1" th:href="@{${pageRedirect}(page=${page.number},view='thumb',index=${index},publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}"><i class='fas fa-th-large'></i></a>
+				</div>
+				<div>
+					<i class='fas fa-ruler-vertical'></i>
+					<small>
+						<span th:if="${page.size == 12}"  class="ml-1"><strong>12x</strong></span> 	<a th:unless="${page.size == 12}"  class="ml-1" th:href="@{${pageRedirect}(page=${page.number},view=${view},index=${index},publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=12)}">12x</a>
+						<span th:if="${page.size == 24}"  class="ml-1"><strong>24x</strong></span> 	<a th:unless="${page.size == 24}"  class="ml-1" th:href="@{${pageRedirect}(page=${page.number},view=${view},index=${index},publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=24)}">24x</a>
+						<span th:if="${page.size == 48}"  class="ml-1"><strong>48x</strong></span> 	<a th:unless="${page.size == 48}"  class="ml-1" th:href="@{${pageRedirect}(page=${page.number},view=${view},index=${index},publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=48)}">48x</a>
+						<span th:if="${page.size == 120}" class="ml-1"><strong>120x</strong></span> <a th:unless="${page.size == 120}" class="ml-1" th:href="@{${pageRedirect}(page=${page.number},view=${view},index=${index},publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=120)}">120x</a>
+						<span th:if="${page.size == 240}" class="ml-1"><strong>240x</strong></span> <a th:unless="${page.size == 240}" class="ml-1" th:href="@{${pageRedirect}(page=${page.number},view=${view},index=${index},publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=240)}">240x</a>
+					</small>
+				</div>
+			</div>
+	
+			<!-- INDEX -->	
+			<ul class="nav nav-pills mb-1">
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == '*'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='*',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">ALL</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == '0'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='0',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">0~9</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'A'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='A',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">A</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'B'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='B',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">B</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'C'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='C',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">C</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'D'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='D',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">D</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'E'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='E',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">E</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'F'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='F',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">F</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'G'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='G',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">G</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'H'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='H',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">H</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'I'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='I',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">I</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'J'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='J',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">J</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'K'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='K',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">K</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'L'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='L',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">L</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'M'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='M',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">M</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'N'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='N',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">N</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'O'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='O',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">O</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'P'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='P',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">P</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'Q'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='Q',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">Q</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'R'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='R',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">R</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'S'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='S',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">S</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'T'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='T',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">T</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'U'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='U',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">U</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'V'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='V',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">V</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'W'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='W',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">W</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'X'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='X',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">X</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'Y'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='Y',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">Y</a></li>
+				<li class="nav-item"><a class="nav-link p-2" th:classappend="${index == 'Z'}? active" th:href="@{${pageRedirect}(page=${page.number},view=${view},index='Z',publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}">Z</a></li>
+			</ul>
+			
+			<!-- LIST -->	
+			<table th:if="${view == 'list'}" class="table table-bordered table-sm table-hover mb-0">
+				<thead class="thead-light">
+					<tr>
+						<th class="text-center"><i class="far fa-star"></i></th>
+						<th th:replace="home/fragments/thID :: th(columnName='volumeID',columnAlias='ID')">...</th>
+						<th th:replace="home/fragments/th :: th(columnName='volumeName',columnAlias='Name')">...</th>
+						<th th:replace="home/fragments/th :: th(columnName='volumeStartYear',columnAlias='Year')">...</th>
+						<th class="text-center"><i class="far fa-flag"></i></th>
+						<th>Issues</th>
+						<th class="text-center"><i class="far fa-bookmark"></i></th>
+						<th>Files</th>
+						<th th:replace="home/fragments/th :: th(columnName='volumePublisher',columnAlias='Publisher')">...</th>
+						<th th:replace="home/fragments/th :: th(columnName='volumeDateAdded',columnAlias='Dt Added')">...</th>
+						<th th:replace="home/fragments/th :: th(columnName='volumeDateLastUpdated',columnAlias='Dt Updated')">...</th>
+						<th th:replace="home/fragments/th :: th(columnName='volumeUpdatedOn',columnAlias='Updated On')">...</th>
+						<th class="text-center"><i class="far fa-question-circle"></i></th>
+						<th th:replace="home/fragments/th :: th(columnName='volumeUpdatedDays',columnAlias='Days')">...</th>
+						<th class="text-center"><i class="fas fa-link"></i></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr class="clickable" th:each="volume : ${page}">
+						<td class="text-center"><i th:if="${not #sets.isEmpty(volume.volumeVolumestars)}" class="fas fa-star"></i></td>
+						<td class="text-right" scope="row"><a th:href="@{/home/volume/{id}(id=${volume.volumeID})}" th:text="${volume.volumeID}"></a></td>
+						<td th:text="${volume.volumeName}"></td>
+						<td th:text="${volume.volumeStartYear}"></td>
+						<td class="text-center"><i th:class="${volume.volumeCompleted}? 'fas fa-flag'"></i></td>
+						<td class="text-right" th:text="${#lists.size(volume.volumeIssues)}"></td>
+						<td class="text-center"></td>
+						<td><div class="progress">
+								<div class="progress-bar" th:classappend="${volume.volumeIssueFilePercent == 100}? 'bg-success'" role="progressbar" th:style="${'width: ' + volume.volumeIssueFilePercent + '%'}" aria-valuenow="${volume.volumeIssueFilePercent}" aria-valuemin="0" aria-valuemax="100" th:text="${volume.volumeIssueFilePercent + '%'}"></div>
+							</div></td> 
+						<td><small th:text="${volume.volumePublisher != null}? ${#strings.toString(volume.volumePublisher.publisherName)}"></small></td>
+						<td class="text-nowrap"><small th:text="${#dates.format(volume.volumeDateAdded, 'yyyy-MM-dd')}"></small></td>
+						<td class="text-nowrap"><small th:text="${#dates.format(volume.volumeDateLastUpdated, 'yyyy-MM-dd hh:mm')}"></small></td>
+						<td class="text-nowrap"><small th:text="${#dates.format(volume.volumeUpdatedOn, 'yyyy-MM-dd hh:mm')}"></small></td>
+						<td class="text-center"><i th:if="${volume.volumeError}" class='fas fa-exclamation-circle text-danger'></i></td>
+						<td class="text-right"><small th:text="${#numbers.formatInteger(volume.volumeUpdatedDays, 1,'POINT')}"></small></td>
+						<td class="text-center"><a target="_blank" th:href="@{${volume.volumeSiteDetailURL}}"><i class='fas fa-globe-americas'></i></a></td>
+					</tr>
+				</tbody>
+			</table>
+
+			<!-- GRID/THUMB -->	
+			<div th:unless="${view == 'list'}" class="row row-cols-1" th:classappend="${view == 'grid'}? row-cols-md-6: row-cols-md-3">
+				<div class="col mb-4" th:each="volume : ${page}">
+					<div class="card">
+						<a th:href="@{/home/volume/{id}(id=${volume.volumeID})}">
+							<img class="card-img-top" th:src="${volume.volumeImage == null || volume.volumeImage.imageSmall == null}? '/img/no-image-small.jpg': ${volume.volumeImage.imageSmall}" alt="..."></a>
+						<div class="card-body p-2">
+							<h6 th:if="${volume.volumeName != null}" class="card-title" th:text="${#strings.defaultString(volume.volumeName, '-')}"></h6>
+							<h6 th:if="${volume.volumeName == null}" class="card-title"><span class="badge badge-danger" th:text="${volume.volumeID}"></span></h6>
+							<p class="card-text text-secondary">
+								<small th:text="${#strings.defaultString(volume.volumeStartYear, '-')}"></small><br>
+								<small th:text="${volume.volumePublisher == null || volume.volumePublisher.publisherName == null}? '-': ${volume.volumePublisher.publisherName}"></small><br>
+								<small th:text="${volume.volumeCountOfIssues == null}? '-': (${volume.volumeCountOfIssues == 1}? '1 issue': ${volume.volumeCountOfIssues + ' issues'})"></small>
+							</p>
+						</div>
+						<div class="card-footer p-2">
+							<div class="progress">
+								<div class="progress-bar" th:classappend="${volume.volumeIssueFilePercent == 100}? 'bg-success'" role="progressbar" th:style="${'width: ' + volume.volumeIssueFilePercent + '%'}" aria-valuenow="${volume.volumeIssueFilePercent}" aria-valuemin="0" aria-valuemax="100" th:text="${volume.volumeIssueFilePercent + '%'}"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<!-- PAGINATION -->
+			<div class="card-footer">
+				<ul class="pagination pagination-sm justify-content-center flex-wrap m-0">
+				    <li class="page-item mb-1 d-flex align-items-stretch" th:classappend="${page.number == 0} ? 'disabled'">
+				    	<a class="page-link d-flex align-items-center" th:href="@{${pageRedirect}(page=0,view=${view},index=${index},publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}"><i class='fas fa-angle-double-left'></i></a>
+				    </li>
+				    <li class="page-item mb-1 d-flex align-items-stretch" th:classappend="${page.number == 0} ? 'disabled'">
+				    	<a class="page-link d-flex align-items-center" th:href="@{${pageRedirect}(page=${page.number-1},view=${view},index=${index},publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}"><i class='fas fa-angle-left'></i></a>
+				    </li>
+				    <li class="page-item mb-1 d-flex align-items-stretch" th:classappend="${page.number == i} ? 'active'" th:each="i: ${#numbers.sequence(0, page.totalPages-1)}">
+				    	<a class="page-link d-flex align-items-center" th:text="${i+1}" th:href="@{${pageRedirect}(page=${i},view=${view},index=${index},publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}"></a>
+				    </li>
+				    <li class="page-item mb-1 d-flex align-items-stretchr" th:classappend="${page.number == page.totalPages-1} ? 'disabled'">
+				    	<a class="page-link d-flex align-items-center" th:href="@{${pageRedirect}(page=${page.number+1},view=${view},index=${index},publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}"><i class='fas fa-angle-right'></i></a>
+				    </li>
+				    <li class="page-item mb-1 d-flex align-items-stretch" th:classappend="${page.number == page.totalPages-1} ? 'disabled'">
+				    	<a class="page-link d-flex align-items-center" th:href="@{${pageRedirect}(page=${page.totalPages-1},view=${view},index=${index},publisher=${publisher},star=${star},flag=${flag},bookmark=${bookmark},searchText=${searchText},size=${page.size})}"><i class='fas fa-angle-double-right'></i></a>
+				    </li>
+			  	</ul>
+			</div>
+
+		</div>
+	</form>
+	</main>
+	<div th:replace="fragments/script :: script">...</div>
+</body>
+</html>

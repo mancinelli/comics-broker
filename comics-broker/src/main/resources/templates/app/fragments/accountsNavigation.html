@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
+
+<div th:fragment="accounts" class="col-3 bg-light">
+	<div class="btn-toolbar justify-content-between mt-3" role="toolbar" aria-label="Toolbar with button groups">
+		<div class="me-2">
+			<a type="button" class="btn btn-outline-primary btn-sm me-1" th:href="@{/app/{bdgUUID}/account(bdgUUID=${bdg.bdgUUID})}"><i class="bi bi-plus-circle"></i> Add Account</a>
+			<button type="button" class="btn btn-outline-primary btn-sm me-1"><i class="bi bi-pencil"></i> Edit</button>
+		</div>
+	</div>
+	<div class="card mt-3">
+		<div class="card-body py-1">
+			<table class="table table-sm table-borderless m-0">
+				<tbody>
+					<tr>
+						<td width="25" class="align-middle"><a href="#"><small><i class="bi bi-pencil-fill"></i></small></a></td>
+						<td><a class="text-decoration-none" th:href="@{/app/{bdgUUID}/accounts/transactions(bdgUUID=${bdg.bdgUUID})}"><strong>All Accounts</strong></a></td>
+						<td align="right"><span th:text="${bdg.bdgCurrencyPlacement == 1 ? bdg.bdgCurrency.ccySymbol + ' ' : ''} + ${#numbers.formatDecimal(sumBalance, 1, bdg.bdgNumberFormat.bdgnGroupSeparatorText, bdg.bdgNumberFormat.bdgnDecimalDigits, bdg.bdgNumberFormat.bdgnDecimalSeparatorText)} + ${bdg.bdgCurrencyPlacement == 2 ? ' ' + bdg.bdgCurrency.ccySymbol : ''}" th:classappend="${sumBalance < 0 ? 'text-danger fw-bold' : 'text-success fw-bold'}"></span></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="card mt-3" th:unless="${#lists.isEmpty(accCreditCardList)}">
+		<div class="card-header py-1">
+			<table class="table table-sm table-borderless m-0">
+				<tbody>
+					<tr>
+						<td><strong>Credit Card Accounts</strong></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="card-body py-1">
+			<table class="table table-sm table-borderless m-0">
+				<tbody>
+					<tr th:each="acc : ${accCreditCardList}" >
+						<td width="25" class="align-middle"><a th:href="@{/app/{bdgUUID}/accounts/{accUUID}/transactions(bdgUUID=${bdg.bdgUUID},accUUID=${acc.accUUID})}"><small><i class="bi bi-pencil-fill"></i></small></a></td>
+						<td><a class="text-decoration-none" th:href="@{/app/{bdgUUID}/accounts/{accUUID}/transactions(bdgUUID=${bdg.bdgUUID},accUUID=${acc.accUUID})}"><span th:text="${acc.accName}"></span></a></td>
+						<td nowrap align="right" th:text="${bdg.bdgCurrencyPlacement == 1 ? bdg.bdgCurrency.ccySymbol + ' ' : ''} + ${#numbers.formatDecimal(acc.accBalance, 1, bdg.bdgNumberFormat.bdgnGroupSeparatorText, bdg.bdgNumberFormat.bdgnDecimalDigits, bdg.bdgNumberFormat.bdgnDecimalSeparatorText)} + ${bdg.bdgCurrencyPlacement == 2 ? ' ' + bdg.bdgCurrency.ccySymbol : ''}" th:classappend="${acc.accBalance < 0 ? 'text-danger fw-bold' : ''}"></td>
+						<!-- TODO badge -->
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="card mt-3" th:unless="${#lists.isEmpty(accCheckingList)}">
+		<div class="card-header py-1">
+			<table class="table table-sm table-borderless m-0">
+				<tbody>
+					<tr>
+						<td><strong>Checking & Cash Accounts</strong></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="card-body py-1">
+			<table class="table table-sm table-borderless m-0">
+				<tbody>
+					<tr th:each="acc : ${accCheckingList}" >
+						<td width="25" class="align-middle"><a th:href="@{/app/{bdgUUID}/accounts/{accUUID}/transactions(bdgUUID=${bdg.bdgUUID},accUUID=${acc.accUUID})}"><small><i class="bi bi-pencil-fill"></i></small></a></td>
+						<td><a class="text-decoration-none" th:href="@{/app/{bdgUUID}/accounts/{accUUID}/transactions(bdgUUID=${bdg.bdgUUID},accUUID=${acc.accUUID})}"><span th:text="${acc.accName}"></span></a></td>
+						<td nowrap align="right" th:text="${bdg.bdgCurrencyPlacement == 1 ? bdg.bdgCurrency.ccySymbol + ' ' : ''} + ${#numbers.formatDecimal(acc.accBalance, 1, bdg.bdgNumberFormat.bdgnGroupSeparatorText, bdg.bdgNumberFormat.bdgnDecimalDigits, bdg.bdgNumberFormat.bdgnDecimalSeparatorText)} + ${bdg.bdgCurrencyPlacement == 2 ? ' ' + bdg.bdgCurrency.ccySymbol : ''}" th:classappend="${acc.accBalance < 0 ? 'text-danger fw-bold' : ''}"></td>
+						<!-- TODO badge -->
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+</html>
