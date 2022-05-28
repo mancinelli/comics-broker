@@ -1,0 +1,49 @@
+<ComicBook Id="00061ddc-8de7-496f-9c51-4aede6593849"
+	File="F:\OneDrive\Comics\DC Comics\Superman (1939)\Superman Vol.1939 #714 (October, 2011).cbr">
+	<Title>Grounded, Finale</Title>
+	<Series>Superman</Series>
+	<Number>714</Number>
+	<Volume>1939</Volume>
+	<AlternateSeries>Grounded</AlternateSeries>
+	<Summary>Superman hits Seattle for his last stop on his "Grounded" walk
+		across the country, and it is in that city where everything will come
+		to a head! The mysterious woman who has been following Superman all
+		year makes a desperate final move, one that may cost the Man of Steel
+		that which he holds most dear!</Summary>
+	<Notes>Scraped metadata from ComicVine [CVDB282707].</Notes>
+	<Year>2011</Year>
+	<Month>10</Month>
+	<Day>1</Day>
+	<Writer>Chris Roberson, J. Michael Straczynski</Writer>
+	<Penciller>Jamal Igle</Penciller>
+	<Inker>Jon Sibal, Robin Riggs</Inker>
+	<Colorist>Marcelo Maiolo</Colorist>
+	<Letterer>John J. Hill</Letterer>
+	<CoverArtist>David Baron, George Pérez, Guy Major, John Cassaday
+	</CoverArtist>
+	<Editor>Matt Idelson, Wil Moss</Editor>
+	<Publisher>DC Comics</Publisher>
+	<Web>https://comicvine.gamespot.com/superman-714-grounded-finale/4000-282707/
+	</Web>
+	<PageCount>23</PageCount>
+	<Characters>Iron Munro, Kon-El, Krypto, Lisa Jennings, Livewire, Lois
+		Lane, Martha Kent, Serling Roquette, Steel, Super-Chief, Supergirl,
+		Superman</Characters>
+	<Teams>Superman Squad, Supermen of America</Teams>
+	<Locations>Fortress of Solidarity, Seattle, Smallville</Locations>
+	<Pages>
+		<Page Image="0" ImageWidth="1280" ImageHeight="1969"
+			Type="FrontCover" />
+		<Page Image="1" ImageWidth="1280" ImageHeight="1963" />
+	</Pages>
+	<Added>2019-09-15T16:08:08.3370418-03:00</Added>
+	<Released>2011-08-03T00:00:00</Released>
+	<Tags>Missing (faltando)</Tags>
+	<SeriesComplete>No</SeriesComplete>
+	<ComicInfoIsDirty>true</ComicInfoIsDirty>
+	<FileSize>13803868</FileSize>
+	<FileModifiedTime>2019-09-15T14:00:07Z</FileModifiedTime>
+	<FileCreationTime>2021-12-04T23:57:21.8954222Z</FileCreationTime>
+	<CustomValuesStore>,comicvine_issue=282707,comicvine_volume=773
+	</CustomValuesStore>
+</ComicBook>

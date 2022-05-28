@@ -1,4 +1,4 @@
-package br.com.mancinelli.comicsbroker;
+package comicsbroker;
 
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
