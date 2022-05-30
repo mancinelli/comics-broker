@@ -69,20 +69,29 @@ public class ApplicationScheduling {
 	}
 	
 	/*
-	 * update with addLog...
+	 * valid with addLog...
 	 */
 	public boolean checkComicsWithNotComicvineInfo() {
 		logger.debug("checkComicsWithNotComicvineInfo() running at : " + new Date());
 		List<VwNoComicvineInfo> vwNoComicvineInfoList = vwNoComicvineInfoRepository.findAll();
 		if (vwNoComicvineInfoList.size() > 0) {
-			logger.warn("checkComicsWithNotComicvineInfo() exists " + vwNoComicvineInfoList.size() + " comics with not comicvine info.");
 			for (VwNoComicvineInfo vwNoComicvineInfo : vwNoComicvineInfoList) {
-				logger.info("     [Publisher: " + vwNoComicvineInfo.getPublisher() + "]"  
-					+ " [Series: " + vwNoComicvineInfo.getSeries() + "]"
-					+ " [Volume: " + vwNoComicvineInfo.getVolume() + "]" 
-					+ " [Number: " + vwNoComicvineInfo.getNumber() + "]" 
-					+ " [ComicvineIssue: " + vwNoComicvineInfo.getComicvine_issue() + "]" 
-					+ " [ComicvineVolume: " + vwNoComicvineInfo.getComicvine_volume() + "]" );
+				String sMessage = "Comics volume [" +  vwNoComicvineInfo.getComicvine_volume() + "] with not comicvine info. [vw_seriescomplete_error]";
+				Log log = new Log(
+						Log.LOG_LEVEL_ERROR, 
+						this.getClass().getName(),
+						new Object(){}.getClass().getEnclosingMethod().getName(),
+						sMessage,
+						vwNoComicvineInfo.getPublisher(),
+						"",
+						vwNoComicvineInfo.getSeries(),
+						vwNoComicvineInfo.getVolume(),
+						vwNoComicvineInfo.getComicvine_volume(),
+						"",
+						"");
+				addLog(log);
+				updateVolumeComics(vwNoComicvineInfo.getComicvine_volume(), true, sMessage);
+				
 			}
 			return false;
 		} else {
@@ -125,6 +134,9 @@ public class ApplicationScheduling {
 		}
 	}
 	
+	/*
+	 * 
+	 */
 	public void checkComicsSeriesCompleteYesOnComicVineApi() {
 		
 		logger.debug("checkComicsSeriesCompleteYesOnComicVineApi() running at : " + new Date());
