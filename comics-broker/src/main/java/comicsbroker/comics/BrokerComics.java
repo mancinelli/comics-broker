@@ -7,7 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 
-@Entity(name = "broker_comic")
+@Entity(name = "broker_comics")
 public class BrokerComics {
 	
 	@Id
@@ -50,13 +50,25 @@ public class BrokerComics {
 	private String seriescomplete;
 	
 	@Lob 
-	private String custom_values_store;
+	@Column(name="custom_values_store")
+	private String customValuesStore;
 	
-	private String comicvine_issue;
+	@Column(name="comicvine_issue")
+	private String comicvineIssue;
 
-	private String comicvine_volume;
+	@Column(name="comicvine_volume")
+	private String comicvineVolume;
 
+	@Column(name="comicvine_volumecheck_lastdate")
+	private Date comicvineVolumeCheckLastDate;
 	
+	@Column(name="comicvine_volumecheck_error")
+	private Boolean comicvineVolumeCheckError;
+
+	@Lob 
+	@Column(name="comicvine_volumecheck_message")
+	private String comicvineVolumeCheckMessage;
+
 	public String getComicbookID() {
 		return comicbookID;
 	}
@@ -193,28 +205,55 @@ public class BrokerComics {
 		this.seriescomplete = seriescomplete;
 	}
 
-	public String getCustom_values_store() {
-		return custom_values_store;
+	// refactor
+	
+	public String getCustomValuesStore() {
+		return customValuesStore;
 	}
 
-	public void setCustom_values_store(String custom_values_store) {
-		this.custom_values_store = custom_values_store;
+	public void setCustomValuesStore(String customValuesStore) {
+		this.customValuesStore = customValuesStore;
 	}
 
-	public String getComicvine_issue() {
-		return comicvine_issue;
+	public String getComicvineIssue() {
+		return comicvineIssue;
 	}
 
-	public void setComicvine_issue(String comicvine_issue) {
-		this.comicvine_issue = comicvine_issue;
+	public void setComicvineIssue(String comicvineIssue) {
+		this.comicvineIssue = comicvineIssue;
 	}
 
-	public String getComicvine_volume() {
-		return comicvine_volume;
+	public String getComicvineVolume() {
+		return comicvineVolume;
 	}
 
-	public void setComicvine_volume(String comicvine_volume) {
-		this.comicvine_volume = comicvine_volume;
+	public void setComicvineVolume(String comicvineVolume) {
+		this.comicvineVolume = comicvineVolume;
 	}
+
+	public Date getComicvineVolumeCheckLastDate() {
+		return comicvineVolumeCheckLastDate;
+	}
+
+	public void setComicvineVolumeCheckLastDate(Date comicvineVolumeCheckLastDate) {
+		this.comicvineVolumeCheckLastDate = comicvineVolumeCheckLastDate;
+	}
+
+	public Boolean getComicvineVolumeCheckError() {
+		return comicvineVolumeCheckError;
+	}
+
+	public void setComicvineVolumeCheckError(Boolean comicvineVolumeCheckError) {
+		this.comicvineVolumeCheckError = comicvineVolumeCheckError;
+	}
+
+	public String getComicvineVolumeCheckMessage() {
+		return comicvineVolumeCheckMessage;
+	}
+
+	public void setComicvineVolumeCheckMessage(String comicvineVolumeCheckMessage) {
+		this.comicvineVolumeCheckMessage = comicvineVolumeCheckMessage;
+	}
+
 
 }

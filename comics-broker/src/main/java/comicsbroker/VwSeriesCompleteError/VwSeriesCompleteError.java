@@ -20,6 +20,8 @@ public class VwSeriesCompleteError {
 	
 	private String comicvine_volume;
 
+	private String tags;
+
 	public String getUuid() {
 		return uuid;
 	}
@@ -38,6 +40,14 @@ public class VwSeriesCompleteError {
 
 	public String getComicvine_volume() {
 		return comicvine_volume;
+	}
+
+	public String getTags() {
+		return tags;
+	}
+
+	public void setTags(String tags) {
+		this.tags = tags;
 	}
 
 
