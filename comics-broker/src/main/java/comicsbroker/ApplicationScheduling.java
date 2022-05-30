@@ -142,11 +142,16 @@ public class ApplicationScheduling {
 		logger.debug("checkComicsSeriesCompleteYesOnComicVineApi() running at : " + new Date());
 		
 		List<VwSeriesCompleteYes> vwSeriesCompleteYesList = vwSeriesCompleteYesRepository.findAll();
+		Integer vwSeriesCompleteYesListCount = vwSeriesCompleteYesList.size();
+		Integer vwSeriesCompleteYesCount = 0;
 		for (VwSeriesCompleteYes vwSeriesCompleteYes : vwSeriesCompleteYesList) {
 			
         	try {
 
-        		/*
+        		vwSeriesCompleteYesCount++;
+    			logger.info("Cheking volume [{}] of [{}]. [{}][{}][{}]", vwSeriesCompleteYesCount, vwSeriesCompleteYesListCount, vwSeriesCompleteYes.getPublisher(), vwSeriesCompleteYes.getSeries(), vwSeriesCompleteYes.getVolume());
+
+    			/*
         		 * https://comicvine.gamespot.com/api/
         		 * Rate limiting
 				 * We restrict the number of requests made per user/hour. We officially support 200 requests per resource, per hour.
@@ -154,12 +159,14 @@ public class ApplicationScheduling {
 				 * 3.600 seconds/hour
 				 * 18 seconds/request/hour (3.600/18) = 200 requests/hour 
         		 */
+
+        		logger.info("Waiting sleep time...");
         		Thread.sleep(18*1000);
 
         		String uri = Application.COMICVINE_API_URI
     					.concat("/volume/" + Application.COMIC_TYPE_VOLUME + "-").concat( vwSeriesCompleteYes.getComicvine_volume())
     					.concat("?api_key=").concat(Application.COMICVINE_API_KEY);
-    			logger.info("uri: {}", uri);
+    			logger.info("Opening {}", uri);
 
         		URL url = new URL(uri);
 
