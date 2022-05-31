@@ -1,4 +1,4 @@
-package comicsbroker.VwSeriesCompleteYes;
+package comicsbroker.VwSeriesCompleteNo;
 
 import java.util.Date;
 
@@ -9,8 +9,8 @@ import javax.persistence.Id;
 import org.hibernate.annotations.Immutable;
 
 @Immutable
-@Entity(name = "vw_seriescomplete_yes")
-public class VwSeriesCompleteYes {
+@Entity(name = "vw_seriescomplete_no")
+public class VwSeriesCompleteNo {
 	
 	@Id
 	private String uuid;
