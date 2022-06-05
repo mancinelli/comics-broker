@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+	<!-- Generic column header -->
+	<table>
+		<tr>
+			<th th:fragment="th(columnName,columnAlias)" scope="col" th:text="${columnAlias}"></th>
+		</tr>
+	</table>
+
+</html>

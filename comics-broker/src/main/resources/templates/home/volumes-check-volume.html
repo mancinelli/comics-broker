@@ -1,0 +1,77 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/fragments/head :: head"></head>
+<body>
+	<header><nav th:replace="home/fragments/menu :: menu"></nav></header>
+	<div class="container">
+		<div class="row pt-3">
+			<div class="col">
+
+				<!-- FORM -->	
+				<table class="table table-bordered table-sm table-hover mb-0">
+					<thead class="thead-dark">
+						<tr>
+							<th>Column</th>
+							<th>Value</th>
+							<th/>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th class="text-nowrap">Publisher</th>
+							<td th:text="${vwComicvineVolumes.publisher}"></td>
+							<td/>
+						</tr>
+						<tr>
+							<th class="text-nowrap">Series</th>
+							<td th:text="${vwComicvineVolumes.series}"></td>
+							<td/>
+						</tr>
+						<tr>
+							<th class="text-nowrap">Volume</th>
+							<td th:text="${vwComicvineVolumes.volume}"></td>
+							<td/>
+						</tr>
+						<tr>
+							<th class="text-nowrap">Qtd Issues</th>
+							<td th:text="${vwComicvineVolumes.qtd}"></td>
+							<td/>
+						</tr>
+						<tr>
+							<th class="text-nowrap">Comicvine Volume</th>
+							<td th:text="${vwComicvineVolumes.comicvineVolume}"></td>
+							<td><a target="_blank" th:href="@{https://comicvine.gamespot.com/volume/4050-{volume}(volume=${vwComicvineVolumes.comicvineVolume})}"><i class="bi bi-link"></i></a></td>
+						</tr>
+						<tr>
+							<th class="text-nowrap">Check Error</th>
+							<td><i th:if="${vwComicvineVolumes.comicvineVolumecheckError}" class="bi bi-x-circle-fill text-danger"></i></td>
+							<td/>
+						</tr>
+						<tr>
+							<th class="text-nowrap">Check Last Date</th>
+							<td th:text="${#dates.format(vwComicvineVolumes.comicvineVolumecheckLastdate, 'yyyy-MM-dd')}"></td>
+							<td/>
+						</tr>
+						<tr>
+							<th class="text-nowrap">Message</th>
+							<td class="small w-100" th:text="${vwComicvineVolumes.comicvineVolumecheckMessage}"></td>
+							<td><i th:if="${vwComicvineVolumes.comicvineVolumecheckMessage}" class="bi bi-chat-left-dots-fill"></i></td>
+						</tr>
+					</tbody>
+				</table>
+
+			</div>
+		</div>
+		
+		<div class="row pt-3">
+			<div class="col">
+				<a th:href="@{/volume/{volume}/checkOnComicVineApi(volume=${vwComicvineVolumes.comicvineVolume})}" class="btn btn-primary" role="button">Check Volume</a>
+			</div>
+		</div>
+		
+	</div>
+	<div th:replace="home/fragments/script :: script">...</div>
+</body>
+</html>
+
+
+			

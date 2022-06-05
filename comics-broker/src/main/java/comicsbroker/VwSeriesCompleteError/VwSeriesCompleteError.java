@@ -21,7 +21,7 @@ public class VwSeriesCompleteError {
 	private String comicvine_volume;
 
 	private String tags;
-
+	
 	public String getUuid() {
 		return uuid;
 	}

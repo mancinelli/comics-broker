@@ -1,0 +1,60 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="home/fragments/head :: head"></head>
+<body>
+	<header><nav th:replace="home/fragments/menu :: menu"></nav></header>
+	<div class="container">
+		<div class="row pt-3">
+			<div class="col">
+
+				<!-- LIST -->	
+				<table class="table table-bordered table-sm table-hover mb-0">
+					<thead class="thead-light">
+						<tr>
+							<th/>
+							<th th:replace="home/fragments/th :: th(columnName='publisher',columnAlias='Publisher')">...</th>
+							<th th:replace="home/fragments/th :: th(columnName='series',columnAlias='Series')">...</th>
+							<th th:replace="home/fragments/th :: th(columnName='qtd',columnAlias='Qtd Issues')">...</th>
+							<th th:replace="home/fragments/th :: th(columnName='volume',columnAlias='Comicvine Volume')">...</th>
+							<th/>
+							<th th:replace="home/fragments/th :: th(columnName='comicvineVolumecheckLastdate',columnAlias='Check LastDate')">...</th>
+							<th/>
+							<th/>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="clickable" th:each="vwComicvineVolumes : ${vwComicvineVolumesList}">
+							<td>
+								<a target="_blank" th:href="@{/volumes-check/volume/{volume}(volume=${vwComicvineVolumes.comicvineVolume})}"><i class="bi bi-arrow-right-circle-fill"></i></a>
+							</td>
+							<td class="small text-nowrap" th:text="${vwComicvineVolumes.publisher}"></td>
+							<td class="small text-nowrap w-100" th:text="${vwComicvineVolumes.series} + ' (' + ${vwComicvineVolumes.volume} +')'"></td>
+							<td class="text-end" th:text="${vwComicvineVolumes.qtd}"></td>
+							<td class="text-end">
+								<small class="text-nowrap" th:text="${vwComicvineVolumes.comicvineVolume}"></small>
+								<a target="_blank" th:href="@{https://comicvine.gamespot.com/volume/4050-{volume}(volume=${vwComicvineVolumes.comicvineVolume})}"><i class="bi bi-link"></i></a>
+							</td>
+							<td th:switch="${vwComicvineVolumes.comicvineVolumecheckError}" class="text-center">
+								<i th:case="true" class="bi bi-x-circle-fill text-danger"></i>
+								<i th:case="false" class="bi bi-check-circle text-success"></i>
+								<i th:case="*" class="bi bi-exclamation-triangle-fill text-warning"></i>
+							</td>
+							<td class="small text-nowrap text-center" th:text="${#dates.format(vwComicvineVolumes.comicvineVolumecheckLastdate, 'yyyy-MM-dd  HH:mm')}"></td>
+							<td>
+								<a target="_blank" th:if="${vwComicvineVolumes.comicvineVolumecheckMessage}" th:href="@{/volumes-check/volume/{volume}(volume=${vwComicvineVolumes.comicvineVolume})}"><i class="bi bi-chat-left-dots-fill"></i></a>
+							</td>
+							<td>
+								<a target="_blank" th:if="${vwComicvineVolumes.dsclubURL}" th:href="@{${vwComicvineVolumes.dsclubURL}}"><i class="bi bi-link"></i></a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+			</div>
+		</div>
+	</div>
+	<div th:replace="home/fragments/script :: script">...</div>
+</body>
+</html>
+
+
+			

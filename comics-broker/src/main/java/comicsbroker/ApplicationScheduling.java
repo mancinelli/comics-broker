@@ -16,10 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import comicsbroker.VwNoComicvineInfo.VwNoComicvineInfo;
 import comicsbroker.VwNoComicvineInfo.VwNoComicvineInfoRepository;
+import comicsbroker.VwSeriesComplete.VwSeriesComplete;
+import comicsbroker.VwSeriesComplete.VwSeriesCompleteRepository;
 import comicsbroker.VwSeriesCompleteError.VwSeriesCompleteError;
 import comicsbroker.VwSeriesCompleteError.VwSeriesCompleteErrorRepository;
 import comicsbroker.VwSeriesCompleteNo.VwSeriesCompleteNo;
@@ -50,6 +51,9 @@ public class ApplicationScheduling {
 	private VwNoComicvineInfoRepository vwNoComicvineInfoRepository;
 
 	@Autowired
+	private VwSeriesCompleteRepository vwSeriesCompleteRepository;
+
+	@Autowired
 	private VwSeriesCompleteErrorRepository vwSeriesCompleteErrorRepository;
 
 	@Autowired
@@ -61,14 +65,14 @@ public class ApplicationScheduling {
 	@Autowired
 	private BrokerComicsRepository brokerComicsRepository;
 
-	@Scheduled(fixedRate = 10000)
+	//@Scheduled(fixedRate = 10000)
 	void check() {
 		
 		logger.info("check() running at : " + new Date());
 		
 		//checkComicsWithNotComicvineInfo();
 
-		//checkComicsWithSeriesCompleteError();
+		checkComicsWithSeriesCompleteError();
 
 		checkComicsSeriesCompleteYesOnComicVineApi();
 		
@@ -109,9 +113,9 @@ public class ApplicationScheduling {
 	}
 
 	/*
-	 * valid addLog...
+	 * ajustar info dos issues com erro em quantidades para todos issues = no, assim, sera reprocessado na vwSeriesCompleteNo.
 	 */
-	public boolean checkComicsWithSeriesCompleteError() {
+	public void checkComicsWithSeriesCompleteError() {
 		logger.debug("checkComicsWithSeriesCompleteError() running at : " + new Date());
 		List<VwSeriesCompleteError> vwSeriesCompleteErrorList = vwSeriesCompleteErrorRepository.findAll();
 		if (vwSeriesCompleteErrorList.size() > 0) {
@@ -135,10 +139,11 @@ public class ApplicationScheduling {
 				updateVolumeComics(vwSeriesCompleteError.getComicvine_volume(), true, sMessage);
 			
 			}
-			return false;
+			//logger.info("checkComicsWithSeriesCompleteError execute [spBrokerComicsReplace]");
+			//vwSeriesCompleteErrorRepository.spBrokerComicsReplace();
+			
 		} else {
 			logger.info("checkComicsWithSeriesCompleteError [OK]");
-			return true;
 		}
 	}
 	
@@ -606,6 +611,247 @@ public class ApplicationScheduling {
 		}
 	}
 
+
+	public void checkComicsVolumeOnComicVineApi(String comicvineVolume) {
+		
+		logger.debug("checkComicsSeriesCompleteNoOnComicVineApi() running at : " + new Date());
+		
+		List<VwSeriesComplete> vwSeriesCompleteList = vwSeriesCompleteRepository.findByComicvineVolume(comicvineVolume);
+		
+		Integer vwSeriesCompleteListCount = vwSeriesCompleteList.size();
+		Integer vwSeriesCompleteCount = 0;
+		for (VwSeriesComplete vwSeriesComplete : vwSeriesCompleteList) {
+			
+        	try {
+
+        		vwSeriesCompleteCount++;
+    			logger.info("Cheking volume [{}] of [{}]. [{}][{}][{}]", vwSeriesCompleteCount, vwSeriesCompleteListCount, vwSeriesComplete.getPublisher(), vwSeriesComplete.getSeries(), vwSeriesComplete.getVolume());
+
+    			/*
+        		 * https://comicvine.gamespot.com/api/
+        		 * Rate limiting
+				 * We restrict the number of requests made per user/hour. We officially support 200 requests per resource, per hour.
+				 * 
+				 * 3.600 seconds/hour
+				 * 18 seconds/request/hour (3.600/18) = 200 requests/hour 
+        		 */
+
+        		logger.info("Waiting sleep time...");
+        		Thread.sleep(18*1000);
+
+        		String uri = Application.COMICVINE_API_URI
+    					.concat("/volume/" + Application.COMIC_TYPE_VOLUME + "-").concat( vwSeriesComplete.getComicvineVolume())
+    					.concat("?api_key=").concat(Application.COMICVINE_API_KEY);
+    			logger.info("Opening {}", uri);
+
+        		URL url = new URL(uri);
+
+    			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    			connection.setRequestMethod("GET");
+    			connection.setRequestProperty("Accept", "application/xml");
+    			connection.setRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.118 Safari/537.36");
+
+    			// URL InputStream
+    			InputStream isXml = connection.getInputStream();
+    			//
+    			
+    			// File InputStream
+    			//ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+    			//InputStream isXml = classloader.getResourceAsStream("volume49197.xml");
+    			//
+    			
+                JAXBContext jaxbContext  = JAXBContext.newInstance(VolumeResponse.class);
+                Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+                Volume volume;
+                VolumeResponse volumeResponse = (VolumeResponse) jaxbUnmarshaller.unmarshal(isXml);
+                
+        		if (! volumeResponse.getError().equalsIgnoreCase(Application.COMICVINE_API_RESPONSE_ERROR_OK)) throw new Exception("VolumeTask: response error");
+                
+            	volume = volumeResponse.getResults().get(0);
+
+            	// Check ComicVine volume null
+				if (volume == null) {
+					String sMessage =  "ComicVine returns [null] volume.";
+					Log log = new Log(
+							Log.LOG_LEVEL_ERROR, 
+							className,
+							new Object(){}.getClass().getEnclosingMethod().getName(),
+							sMessage,
+							vwSeriesComplete.getPublisher(),
+							"",
+							vwSeriesComplete.getSeries(),
+							vwSeriesComplete.getVolume(),
+							vwSeriesComplete.getComicvineVolume(),
+							"",
+							"");
+					addLog(log);
+					updateVolumeComics(vwSeriesComplete.getComicvineVolume(), true, sMessage);
+					throw new Exception(sMessage);
+				}
+
+				// Check ComicVine volumeID null
+        		if (volume.getVolumeID() == null) {
+					String sMessage = "ComicVine returns [null] volumeID.";
+					Log log = new Log(
+							Log.LOG_LEVEL_ERROR, 
+							this.getClass().getName(),
+							new Object(){}.getClass().getEnclosingMethod().getName(),
+							sMessage,
+							vwSeriesComplete.getPublisher(),
+							"",
+							vwSeriesComplete.getSeries(),
+							vwSeriesComplete.getVolume(),
+							vwSeriesComplete.getComicvineVolume(),
+							"",
+							"");
+					addLog(log);
+					updateVolumeComics(vwSeriesComplete.getComicvineVolume(), true, sMessage);
+					throw new Exception(sMessage);
+        		}
+
+        		// Check count of issues
+        		if (vwSeriesComplete.getQtd() != volume.getVolumeCountOfIssues().longValue() ) {
+					String sMessage = "ComicVine returns different count of issues [" + volume.getVolumeCountOfIssues().longValue() + "] than ComicRack [" + vwSeriesComplete.getQtd() + "].";
+					Log log = new Log(
+							Log.LOG_LEVEL_ERROR, 
+							this.getClass().getName(),
+							new Object(){}.getClass().getEnclosingMethod().getName(),
+							sMessage,
+							vwSeriesComplete.getPublisher(),
+							volume.getVolumePublisher().getPublisherID().toString(),
+							vwSeriesComplete.getSeries(),
+							vwSeriesComplete.getVolume(),
+							vwSeriesComplete.getComicvineVolume(),
+							"",
+							"");
+					addLog(log);
+					updateVolumeComics(vwSeriesComplete.getComicvineVolume(), true, sMessage);
+					throw new Exception(sMessage);
+        		}
+        		
+        		// Check all volume issue number
+        		Integer issueCheckCount = 0;
+        		Integer issueCheckError = 0;
+        		for (Issue issue : volume.getVolumeIssues()) {
+        			issueCheckCount++;
+        			List<BrokerComics> brokerComicsIssueList = brokerComicsRepository.findAllByComicvineIssue(issue.getIssueID().toString());
+
+        			if (brokerComicsIssueList.isEmpty()) {
+        				issueCheckError++;
+    					String sMessage = "ComicVine issue [" + issue.getIssueID().toString() + "] not found on ComicRack.";
+    					Log log = new Log(
+    							Log.LOG_LEVEL_WARN, 
+    							this.getClass().getName(),
+    							new Object(){}.getClass().getEnclosingMethod().getName(),
+    							sMessage,
+    							vwSeriesComplete.getPublisher(),
+    							volume.getVolumePublisher().getPublisherID().toString(),
+    							vwSeriesComplete.getSeries(),
+    							vwSeriesComplete.getVolume(),
+    							vwSeriesComplete.getComicvineVolume(),
+    							issue.getIssueNumber(),
+    							issue.getIssueID().toString());
+    					addLog(log);
+    					updateIssueComics(issue.getIssueID().toString(), true, sMessage);
+        			
+        			} else if (brokerComicsIssueList.size() > 1) {
+        				issueCheckError++;
+    					String sMessage = "ComicVine issue [" + issue.getIssueID().toString() + "] found more than 1 ComicRack comic.";
+    					Log log = new Log(
+    							Log.LOG_LEVEL_WARN, 
+    							this.getClass().getName(),
+    							new Object(){}.getClass().getEnclosingMethod().getName(),
+    							sMessage,
+    							vwSeriesComplete.getPublisher(),
+    							volume.getVolumePublisher().getPublisherID().toString(),
+    							vwSeriesComplete.getSeries(),
+    							vwSeriesComplete.getVolume(),
+    							vwSeriesComplete.getComicvineVolume(),
+    							issue.getIssueNumber(),
+    							issue.getIssueID().toString());
+    					addLog(log);
+    					updateIssueComics(issue.getIssueID().toString(), true, sMessage);
+        				
+        			} else {
+    					
+        				BrokerComics brokerComics = brokerComicsIssueList.get(0);
+        				
+        				if (! brokerComics.getNumber().equalsIgnoreCase(issue.getIssueNumber())) {
+        					issueCheckError++;
+        					String sMessage = "ComicVine issue number [" + brokerComics.getNumber() +  "] different than ComicRack comic number [" + issue.getIssueNumber() + "].";
+        					Log log = new Log(
+        							Log.LOG_LEVEL_WARN, 
+        							this.getClass().getName(),
+        							new Object(){}.getClass().getEnclosingMethod().getName(),
+        							sMessage,
+        							vwSeriesComplete.getPublisher(),
+        							volume.getVolumePublisher().getPublisherID().toString(),
+        							vwSeriesComplete.getSeries(),
+        							vwSeriesComplete.getVolume(),
+        							vwSeriesComplete.getComicvineVolume(),
+        							issue.getIssueNumber(),
+        							issue.getIssueID().toString());
+        					addLog(log);
+        					updateIssueComics(issue.getIssueID().toString(), true, sMessage);
+        				}
+        			}
+        			
+        		} //for (Issue issue : volume.getVolumeIssues())
+        			
+        		if (issueCheckError > 0) {
+					String sMessage = "ComicVine volume issues check on ComicRack issues found [" + issueCheckError + "] errors.";
+					Log log = new Log(
+							Log.LOG_LEVEL_ERROR, 
+							this.getClass().getName(),
+							new Object(){}.getClass().getEnclosingMethod().getName(),
+							sMessage,
+							vwSeriesComplete.getPublisher(),
+							volume.getVolumePublisher().getPublisherID().toString(),
+							vwSeriesComplete.getSeries(),
+							vwSeriesComplete.getVolume(),
+							vwSeriesComplete.getComicvineVolume(),
+							"",
+							"");
+					addLog(log);
+					updateVolumeComics(vwSeriesComplete.getComicvineVolume(), true, sMessage);
+					throw new Exception(sMessage);
+        		}
+        		
+        		// Update ComicVine last check date
+				String sMessage = "ComicVine volume check complete with no errors.";
+				Log log = new Log(
+						Log.LOG_LEVEL_INFO, 
+						this.getClass().getName(),
+						new Object(){}.getClass().getEnclosingMethod().getName(),
+						sMessage,
+						vwSeriesComplete.getPublisher(),
+						volume.getVolumePublisher().getPublisherID().toString(),
+						vwSeriesComplete.getSeries(),
+						vwSeriesComplete.getVolume(),
+						vwSeriesComplete.getComicvineVolume(),
+						"",
+						"");
+				addLog(log);
+				updateVolumeComics(vwSeriesComplete.getComicvineVolume(), false, null);
+
+
+    		} catch (Exception e) {
+    			logger.error(e.getMessage(), e);
+
+            }			
+
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	private void addLog (Log log) {
 		if (log.getLogLevel().equalsIgnoreCase(Log.LOG_LEVEL_INFO)) 	logger.info(log.getLogMessage());
 		if (log.getLogLevel().equalsIgnoreCase(Log.LOG_LEVEL_WARN)) 	logger.warn(log.getLogMessage());
@@ -619,12 +865,16 @@ public class ApplicationScheduling {
 		for (BrokerComics brokerComics : brokerComicsVolumeList) {
 			brokerComics.setComicvineVolumeCheckLastDate(lastCheckDate);
 			brokerComics.setComicvineVolumeCheckError(error);
-			if (message != null) {
-				if (brokerComics.getComicvineVolumeCheckMessage() == null) {
-					brokerComics.setComicvineVolumeCheckMessage(message);
-				} else {
-					brokerComics.setComicvineVolumeCheckMessage(brokerComics.getComicvineVolumeCheckMessage() + "\n" + message);
+			if (error) {
+				if (message != null) {
+					if (brokerComics.getComicvineVolumeCheckMessage() == null) {
+						brokerComics.setComicvineVolumeCheckMessage(message);
+					} else {
+						brokerComics.setComicvineVolumeCheckMessage(brokerComics.getComicvineVolumeCheckMessage() + "\n" + message);
+					}
 				}
+			} else {
+				brokerComics.setComicvineVolumeCheckMessage(null);
 			}
 			brokerComicsRepository.save(brokerComics);
 		}
@@ -636,6 +886,7 @@ public class ApplicationScheduling {
 		for (BrokerComics brokerComics : brokerComicsVolumeList) {
 			brokerComics.setComicvineVolumeCheckLastDate(lastCheckDate);
 			brokerComics.setComicvineVolumeCheckError(error);
+			
 			if (message != null) {
 				if (brokerComics.getComicvineVolumeCheckMessage() == null) {
 					brokerComics.setComicvineVolumeCheckMessage(message);
