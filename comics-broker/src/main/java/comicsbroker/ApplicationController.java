@@ -25,6 +25,19 @@ public class ApplicationController {
         return "home/home";
     }
 
+	@GetMapping({"/database-update"} )
+    public String databaseUpdate() {
+		return "home/database-update";
+    }
+
+	@GetMapping({"/database-update-start"} )
+    public String databaseUpdateStart() {
+
+		brokerComicsService.callSpBrokerComics();
+
+		return "redirect:/volumes-check";
+    }
+
 	@GetMapping({"/volumes-check"})
 	public String getVolumesCheck(Model model) { 
 
@@ -47,13 +60,20 @@ public class ApplicationController {
 
 	@GetMapping({"/volume/{comicvineVolume}/checkOnComicVineApi"})
 	public String getcheckOnComicVineApi(
-		@PathVariable("comicvineVolume") String comicvineVolume,
-		Model model) { 
+		@PathVariable("comicvineVolume") String comicvineVolume) { 
 
 		brokerComicsService.checkComicsVolumeOnComicVineApi(comicvineVolume);
 		
-        return "redirect://volumes-check/volume/" + comicvineVolume;
+        return "redirect:/volumes-check/volume/" + comicvineVolume;
 	}
 
+	@GetMapping({"/volume/{comicvineVolume}/checkOnComicVineApi/returnToList"})
+	public String getCheckOnComicVineApiReturnToList(
+		@PathVariable("comicvineVolume") String comicvineVolume) { 
+		
+		brokerComicsService.checkComicsVolumeOnComicVineApi(comicvineVolume);
+		
+		return "redirect:/volumes-check";
+	}
 	
 }

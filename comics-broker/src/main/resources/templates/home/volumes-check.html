@@ -19,6 +19,7 @@
 							<th th:replace="home/fragments/th :: th(columnName='comicvineVolumecheckLastdate',columnAlias='Check LastDate')">...</th>
 							<th/>
 							<th/>
+							<th/>
 						</tr>
 					</thead>
 					<tbody>
@@ -38,12 +39,15 @@
 								<i th:case="false" class="bi bi-check-circle text-success"></i>
 								<i th:case="*" class="bi bi-exclamation-triangle-fill text-warning"></i>
 							</td>
-							<td class="small text-nowrap text-center" th:text="${#dates.format(vwComicvineVolumes.comicvineVolumecheckLastdate, 'yyyy-MM-dd  HH:mm')}"></td>
+							<td class="small text-nowrap text-center" th:text="${#dates.format(vwComicvineVolumes.comicvineVolumecheckLastdate, 'yyyy-MM-dd HH:mm:ss')}"></td>
 							<td>
-								<a target="_blank" th:if="${vwComicvineVolumes.comicvineVolumecheckMessage}" th:href="@{/volumes-check/volume/{volume}(volume=${vwComicvineVolumes.comicvineVolume})}"><i class="bi bi-chat-left-dots-fill"></i></a>
+								<a target="_blank" th:if="${vwComicvineVolumes.comicvineVolumecheckMessage}" th:href="@{/volumes-check/volume/{volume}(volume=${vwComicvineVolumes.comicvineVolume})}"><i class="bi bi-chat-left-dots"></i></a>
 							</td>
 							<td>
 								<a target="_blank" th:if="${vwComicvineVolumes.dsclubURL}" th:href="@{${vwComicvineVolumes.dsclubURL}}"><i class="bi bi-link"></i></a>
+							</td>
+							<td>
+								<a th:href="@{/volume/{volume}/checkOnComicVineApi/returnToList(volume=${vwComicvineVolumes.comicvineVolume})}"><i class="bi bi-lightning-fill"></i></a>
 							</td>
 						</tr>
 					</tbody>

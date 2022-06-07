@@ -13,5 +13,5 @@ public interface BrokerComicsRepository extends JpaRepository <BrokerComics, Str
 	public List<BrokerComics> findAllByComicvineIssue(String issue);
 
 	@Procedure(procedureName = "sp_broker_comics")
-	void callSpBrokerComics();
+	public void callSpBrokerComics();
 }

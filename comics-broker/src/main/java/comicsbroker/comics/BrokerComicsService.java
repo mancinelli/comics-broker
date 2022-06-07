@@ -38,12 +38,16 @@ public class BrokerComicsService {
 
 	@Autowired
 	private BrokerComicsRepository brokerComicsRepository;
+	
+	public void callSpBrokerComics() {
+		brokerComicsRepository.callSpBrokerComics();
+	}
 
 	public void checkComicsVolumeOnComicVineApi(String comicvineVolume) {
 		
 		logger.debug("checkComicsSeriesCompleteNoOnComicVineApi() running at : " + new Date());
 		
-		brokerComicsRepository.callSpBrokerComics();
+		callSpBrokerComics();
 		
 		List<VwSeriesComplete> vwSeriesCompleteList = vwSeriesCompleteRepository.findByComicvineVolume(comicvineVolume);
 		
@@ -225,11 +229,80 @@ public class BrokerComicsService {
         					updateIssueComics(issue.getIssueID().toString(), true, sMessage);
         				}
         			}
-        			
         		} //for (Issue issue : volume.getVolumeIssues())
         			
+
+        		// Check all volume issues complete series and tags
+        		issueCheckCount = 0;
+        		issueCheckError = 0;
+        		for (Issue issue : volume.getVolumeIssues()) {
+        			issueCheckCount++;
+        			List<BrokerComics> brokerComicsIssueList = brokerComicsRepository.findAllByComicvineIssue(issue.getIssueID().toString());
+
+        			// more than 1 comic previous checked
+    				BrokerComics brokerComics = brokerComicsIssueList.get(0);
+    				
+    				if (! brokerComics.getSeriescomplete().equalsIgnoreCase("Yes")) {
+    					issueCheckError++;
+    					String sMessage = "ComicRack comic number [" + issue.getIssueNumber() + "] [seriescomplete] not set to [Yes].";
+    					Log log = new Log(
+    							Log.LOG_LEVEL_WARN, 
+    							this.getClass().getName(),
+    							new Object(){}.getClass().getEnclosingMethod().getName(),
+    							sMessage,
+    							vwSeriesComplete.getPublisher(),
+    							volume.getVolumePublisher().getPublisherID().toString(),
+    							vwSeriesComplete.getSeries(),
+    							vwSeriesComplete.getVolume(),
+    							vwSeriesComplete.getComicvineVolume(),
+    							issue.getIssueNumber(),
+    							issue.getIssueID().toString());
+    					addLog(log);
+    					updateIssueComics(issue.getIssueID().toString(), true, sMessage);
+    				}
+
+    				if (! brokerComics.getTags().equalsIgnoreCase("Complete (completo)") && ! brokerComics.getTags().equalsIgnoreCase("Ongoing (em andamento)")) {
+    					issueCheckError++;
+    					String sMessage = "ComicRack comic number [" + issue.getIssueNumber() + "] [tags] not set to [Complete (completo)] or [Missing (faltando)].";
+    					Log log = new Log(
+    							Log.LOG_LEVEL_WARN, 
+    							this.getClass().getName(),
+    							new Object(){}.getClass().getEnclosingMethod().getName(),
+    							sMessage,
+    							vwSeriesComplete.getPublisher(),
+    							volume.getVolumePublisher().getPublisherID().toString(),
+    							vwSeriesComplete.getSeries(),
+    							vwSeriesComplete.getVolume(),
+    							vwSeriesComplete.getComicvineVolume(),
+    							issue.getIssueNumber(),
+    							issue.getIssueID().toString());
+    					addLog(log);
+    					updateIssueComics(issue.getIssueID().toString(), true, sMessage);
+    				}
+        		}
+        		
         		if (issueCheckError > 0) {
 					String sMessage = "ComicVine volume issues check on ComicRack issues found [" + issueCheckError + "] errors.";
+					Log log = new Log(
+							Log.LOG_LEVEL_ERROR, 
+							this.getClass().getName(),
+							new Object(){}.getClass().getEnclosingMethod().getName(),
+							sMessage,
+							vwSeriesComplete.getPublisher(),
+							volume.getVolumePublisher().getPublisherID().toString(),
+							vwSeriesComplete.getSeries(),
+							vwSeriesComplete.getVolume(),
+							vwSeriesComplete.getComicvineVolume(),
+							"",
+							"");
+					addLog(log);
+					updateVolumeComics(vwSeriesComplete.getComicvineVolume(), true, sMessage);
+					throw new Exception(sMessage);
+        		}
+        		
+        		// Check complete series for volumes with no errors
+        		if (vwSeriesComplete.getQtd() != volume.getVolumeCountOfIssues().longValue() ) {
+					String sMessage = "ComicVine returns different count of issues [" + volume.getVolumeCountOfIssues().longValue() + "] than ComicRack [" + vwSeriesComplete.getQtd() + "].";
 					Log log = new Log(
 							Log.LOG_LEVEL_ERROR, 
 							this.getClass().getName(),

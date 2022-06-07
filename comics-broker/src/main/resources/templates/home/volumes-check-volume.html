@@ -43,12 +43,16 @@
 						</tr>
 						<tr>
 							<th class="text-nowrap">Check Error</th>
-							<td><i th:if="${vwComicvineVolumes.comicvineVolumecheckError}" class="bi bi-x-circle-fill text-danger"></i></td>
+							<td th:switch="${vwComicvineVolumes.comicvineVolumecheckError}">
+								<i th:case="true" class="bi bi-x-circle-fill text-danger"></i>
+								<i th:case="false" class="bi bi-check-circle text-success"></i>
+								<i th:case="*" class="bi bi-exclamation-triangle-fill text-warning"></i>
+							</td>
 							<td/>
 						</tr>
 						<tr>
 							<th class="text-nowrap">Check Last Date</th>
-							<td th:text="${#dates.format(vwComicvineVolumes.comicvineVolumecheckLastdate, 'yyyy-MM-dd')}"></td>
+							<td th:text="${#dates.format(vwComicvineVolumes.comicvineVolumecheckLastdate, 'yyyy-MM-dd HH:mm:ss')}"></td>
 							<td/>
 						</tr>
 						<tr>
